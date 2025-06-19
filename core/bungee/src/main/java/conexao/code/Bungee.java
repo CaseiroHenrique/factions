@@ -10,6 +10,7 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
+import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
@@ -90,29 +91,30 @@ public class Bungee extends Plugin implements Listener {
 
     @EventHandler
     public void onPostLogin(PostLoginEvent e) {
-        ProxiedPlayer joined = e.getPlayer();
+        final ProxiedPlayer joined = e.getPlayer();
 
-        // Envia todos os jogadores existentes para quem acabou de entrar
-        List<PlayerListItem.Item> existing = new ArrayList<>();
-        for (ProxiedPlayer p : getProxy().getPlayers()) {
-            if (p != joined) {
-                existing.add(toItem(p));
+        // Aguarda breve período para garantir handshake concluído
+        getProxy().getScheduler().schedule(this, () -> {
+            List<PlayerListItem.Item> existing = new ArrayList<>();
+            for (ProxiedPlayer p : getProxy().getPlayers()) {
+                if (p != joined) {
+                    existing.add(toItem(p));
+                }
             }
-        }
-        if (!existing.isEmpty()) {
-            PlayerListItem pkt = new PlayerListItem();
-            pkt.setAction(PlayerListItem.Action.ADD_PLAYER);
-            pkt.setItems(existing.toArray(new PlayerListItem.Item[0]));
-            joined.unsafe().sendPacket(pkt);
-        }
+            if (!existing.isEmpty()) {
+                PlayerListItem pkt = new PlayerListItem();
+                pkt.setAction(PlayerListItem.Action.ADD_PLAYER);
+                pkt.setItems(existing.toArray(new PlayerListItem.Item[0]));
+                joined.unsafe().sendPacket(pkt);
+            }
 
-        // Anuncia o novo jogador para todos
-        PlayerListItem pktNew = new PlayerListItem();
-        pktNew.setAction(PlayerListItem.Action.ADD_PLAYER);
-        pktNew.setItems(new PlayerListItem.Item[]{toItem(joined)});
-        for (ProxiedPlayer p : getProxy().getPlayers()) {
-            p.unsafe().sendPacket(pktNew);
-        }
+            PlayerListItem pktNew = new PlayerListItem();
+            pktNew.setAction(PlayerListItem.Action.ADD_PLAYER);
+            pktNew.setItems(new PlayerListItem.Item[]{toItem(joined)});
+            for (ProxiedPlayer p : getProxy().getPlayers()) {
+                p.unsafe().sendPacket(pktNew);
+            }
+        }, 100, TimeUnit.MILLISECONDS);
     }
 
     @EventHandler
