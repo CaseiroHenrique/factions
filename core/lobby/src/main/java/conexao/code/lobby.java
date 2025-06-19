@@ -4,6 +4,7 @@ package conexao.code;
 import conexao.code.commands.ReloadCommand;
 import conexao.code.commands.SetSpawnCommand;
 import conexao.code.commands.ChangePasswordCommand;
+import conexao.code.common.DatabaseManager;
 import conexao.code.manager.ScoreboardManager;
 import conexao.code.manager.TabListManager;
 import conexao.code.manager.SpawnManager;
@@ -22,6 +23,12 @@ public class lobby extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        String host     = getConfig().getString("mysql.host");
+        int    port     = getConfig().getInt("mysql.port");
+        String database = getConfig().getString("mysql.database");
+        String user     = getConfig().getString("mysql.user");
+        String pass     = getConfig().getString("mysql.password");
+        DatabaseManager.init(host, port, database, user, pass);
         scoreboardManager = new ScoreboardManager(this);
         scoreboardManager.start();
         tabListManager = new TabListManager(this);
