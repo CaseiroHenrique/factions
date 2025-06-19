@@ -11,10 +11,16 @@ commands:
     description: Define o spawn do lobby
     usage: /setspawn
     aliases: [setlobbyspawn]
+  tag:
+    description: Gerencia tags de jogadores
+    usage: /tag <create|set|remove|addperm|delperm>
 permissions:
   lobby.reload:
     description: Permite usar /recarregar
     default: op
   lobby.setspawn:
     description: Permite definir o spawn do lobby
+    default: op
+  lobby.tag:
+    description: Permite gerenciar tags
     default: op
