@@ -8,4 +8,8 @@ commands:
     usage: /register <senha>
   login:
     description: Faz login na sua conta
+    aliases: [entrar, logar]
     usage: /login <senha>
+  trocarsenha:
+    description: Altera sua senha
+    usage: /trocarsenha <senha-antiga> <senha-nova>

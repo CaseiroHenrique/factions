@@ -53,6 +53,7 @@ public class Loginserver extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AuthListener(this),    this);
         getCommand("register").setExecutor(new RegisterCommand(this));
         getCommand("login").   setExecutor(new LoginCommand(this));
+        getCommand("trocarsenha").setExecutor(new ChangePasswordCommand(this));
     }
 
     @Override

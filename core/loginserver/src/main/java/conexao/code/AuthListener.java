@@ -48,6 +48,13 @@ public class AuthListener implements Listener {
         }
     }
 
+    /**
+     * Verifica se o jogador já passou pelo processo de login.
+     */
+    public static boolean isAuthenticated(UUID id) {
+        return authenticated.contains(id);
+    }
+
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         e.setJoinMessage(null);
