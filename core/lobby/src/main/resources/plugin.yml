@@ -11,6 +11,9 @@ commands:
     description: Define o spawn do lobby
     usage: /setspawn
     aliases: [setlobbyspawn]
+  trocarsenha:
+    description: Altera sua senha
+    usage: /trocarsenha <senha-antiga> <senha-nova>
 permissions:
   lobby.reload:
     description: Permite usar /recarregar

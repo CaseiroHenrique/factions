@@ -1,4 +1,4 @@
-package conexao.code;
+package conexao.code.commands;
 
 import conexao.code.common.DatabaseManager;
 import org.bukkit.Bukkit;
@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -17,9 +18,9 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public class ChangePasswordCommand implements CommandExecutor {
-    private final Loginserver plugin;
+    private final Plugin plugin;
 
-    public ChangePasswordCommand(Loginserver plugin) {
+    public ChangePasswordCommand(Plugin plugin) {
         this.plugin = plugin;
     }
 
@@ -28,11 +29,6 @@ public class ChangePasswordCommand implements CommandExecutor {
         if (!(sender instanceof Player)) return true;
         Player p = (Player) sender;
         UUID id = p.getUniqueId();
-
-        if (!AuthListener.isAuthenticated(id)) {
-            p.sendMessage(ChatColor.RED + "Você precisa estar logado para trocar a senha.");
-            return true;
-        }
 
         if (args.length != 2) {
             p.sendMessage(ChatColor.RED + "Uso: /trocarsenha <senha-antiga> <senha-nova>");

@@ -3,6 +3,7 @@ package conexao.code;
 
 import conexao.code.commands.ReloadCommand;
 import conexao.code.commands.SetSpawnCommand;
+import conexao.code.commands.ChangePasswordCommand;
 import conexao.code.manager.ScoreboardManager;
 import conexao.code.manager.TabListManager;
 import conexao.code.manager.SpawnManager;
@@ -29,6 +30,7 @@ public class lobby extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
         getCommand("recarregar").setExecutor(new ReloadCommand(this, scoreboardManager, tabListManager));
         getCommand("setspawn").setExecutor(new SetSpawnCommand(spawnManager));
+        getCommand("trocarsenha").setExecutor(new ChangePasswordCommand(this));
     }
 
     @Override
