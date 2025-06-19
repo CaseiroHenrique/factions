@@ -106,6 +106,7 @@ public class AuthListener implements Listener {
                         TextComponent.fromLegacyText(bar));
                 if (remaining-- <= 0) {
                     String kickMsg = plugin.getConfig().getString("messages.kick-timeout", "&cTempo esgotado.");
+                    DatabaseManager.logKick(p.getName(), "login-timeout");
                     p.kickPlayer(ChatColor.translateAlternateColorCodes('&', kickMsg));
                     this.cancel();
                 }

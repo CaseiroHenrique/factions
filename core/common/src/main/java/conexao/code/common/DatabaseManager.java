@@ -117,4 +117,25 @@ public class DatabaseManager {
             }
         }
     }
+
+    /**
+     * Registra um kick na tabela 'kick_log'.
+     *
+     * @param username nome do jogador
+     * @param reason   motivo do kick
+     */
+    public static void logKick(String username, String reason) {
+        String sql = "INSERT INTO kick_log(username, reason) VALUES(?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            ps.setString(2, reason);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
