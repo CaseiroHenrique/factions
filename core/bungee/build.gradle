@@ -27,3 +27,14 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+// Copia o plugin gerado para a pasta do proxy
+tasks.register('copyPlugin', Copy) {
+    dependsOn tasks.named('jar')
+    from tasks.named('jar')
+    into new File('E\\hyze\\bungee\\plugins')
+}
+
+tasks.named('build') {
+    finalizedBy tasks.named('copyPlugin')
+}

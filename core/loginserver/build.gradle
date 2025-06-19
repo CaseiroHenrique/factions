@@ -61,4 +61,12 @@ tasks.named('jar') {
 // Garante que build produza o fat-JAR
 tasks.named('build') {
     dependsOn tasks.named('shadowJar')
+    finalizedBy tasks.named('copyPlugin')
+}
+
+// Copia o plugin gerado para a pasta do servidor de login
+tasks.register('copyPlugin', Copy) {
+    dependsOn tasks.named('shadowJar')
+    from tasks.named('shadowJar')
+    into new File('E\\hyze\\login\\plugins')
 }

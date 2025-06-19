@@ -57,3 +57,14 @@ processResources {
         expand props
     }
 }
+
+// Copia o plugin gerado para a pasta do servidor de factions
+tasks.register('copyPlugin', Copy) {
+    dependsOn tasks.named('jar')
+    from tasks.named('jar')
+    into new File('E\\hyze\\factions\\plugins')
+}
+
+tasks.named('build') {
+    finalizedBy tasks.named('copyPlugin')
+}
