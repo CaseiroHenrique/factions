@@ -8,6 +8,7 @@ import conexao.code.common.DatabaseManager;
 import conexao.code.manager.ScoreboardManager;
 import conexao.code.manager.TabListManager;
 import conexao.code.manager.SpawnManager;
+import conexao.code.listeners.LobbySettingsListener;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,6 +36,7 @@ public class lobby extends JavaPlugin implements Listener {
         tabListManager.applyAll();
         spawnManager = new SpawnManager(this);
         Bukkit.getPluginManager().registerEvents(this, this);
+        Bukkit.getPluginManager().registerEvents(new LobbySettingsListener(), this);
         getCommand("recarregar").setExecutor(new ReloadCommand(this, scoreboardManager, tabListManager));
         getCommand("setspawn").setExecutor(new SetSpawnCommand(spawnManager));
         getCommand("trocarsenha").setExecutor(new ChangePasswordCommand(this));
@@ -47,6 +49,7 @@ public class lobby extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        e.setJoinMessage(null);
         e.getPlayer().setScoreboard(scoreboardManager.getBoard());
         tabListManager.applyAll();
         if (spawnManager.getSpawn() != null) {
