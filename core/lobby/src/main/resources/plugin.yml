@@ -7,7 +7,14 @@ commands:
     description: Recarrega o scoreboard e tablist do lobby
     usage: /recarregar
     aliases: [reload]
+  setspawn:
+    description: Define o spawn do lobby
+    usage: /setspawn
+    aliases: [setlobbyspawn]
 permissions:
   lobby.reload:
     description: Permite usar /recarregar
+    default: op
+  lobby.setspawn:
+    description: Permite definir o spawn do lobby
     default: op
