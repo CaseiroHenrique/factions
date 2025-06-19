@@ -9,6 +9,14 @@ enable-scoreboard: true
 enable-tablist: true
 update-interval-ticks: 20  # 1 second
 
+spawn:
+  world: world
+  x: 0
+  y: 80
+  z: 0
+  yaw: 0
+  pitch: 0
+
 # ----- Scoreboard -----
 scoreboard:
   title: '&cCOMMUNITY'
