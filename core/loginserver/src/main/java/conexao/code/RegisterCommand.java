@@ -11,6 +11,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import conexao.code.common.DatabaseManager;
+import conexao.code.permissions.Tag;
+import conexao.code.permissions.TagDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -97,10 +99,26 @@ public class RegisterCommand implements CommandExecutor {
                         AuthListener.markAuthenticated(id);
 
                         // Prepara dados de autenticação para o BungeeCord
+                        Tag tag = null;
+                        try {
+                            tag = TagDAO.getTagByUser(id);
+                        } catch (SQLException ex) {
+                            plugin.getLogger().warning("Erro ao obter tag: " + ex.getMessage());
+                        }
                         ByteArrayDataOutput buf = ByteStreams.newDataOutput();
                         buf.writeUTF("auth");
                         buf.writeUTF(p.getName());
                         buf.writeBoolean(true);
+                        if (tag != null) {
+                            buf.writeBoolean(true);
+                            buf.writeUTF(tag.getName());
+                            buf.writeUTF(empty(tag.getColor()));
+                            buf.writeUTF(empty(tag.getPrefix()));
+                            buf.writeUTF(empty(tag.getSuffix()));
+                            buf.writeUTF(String.join(",", tag.getPermissions()));
+                        } else {
+                            buf.writeBoolean(false);
+                        }
                         byte[] authData = buf.toByteArray();
 
                         // Forward via plugin channel
@@ -123,5 +141,9 @@ public class RegisterCommand implements CommandExecutor {
         }.runTaskAsynchronously(plugin);
 
         return true;
+    }
+
+    private String empty(String s) {
+        return s == null ? "" : s;
     }
 }

@@ -27,19 +27,26 @@ public class TagManager {
             public void run() {
                 try {
                     Tag tag = TagDAO.getTagByUser(uuid);
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (tag != null) {
-                            setDisplay(player, tag);
-                            applyPermissions(player, tag);
-                        } else {
-                            clear(uuid);
-                        }
-                    });
+                    Bukkit.getScheduler().runTask(plugin, () -> apply(player, tag));
                 } catch (SQLException ex) {
                     plugin.getLogger().warning("Erro ao carregar tag: " + ex.getMessage());
                 }
             }
         }.runTaskAsynchronously(plugin);
+    }
+
+    /**
+     * Aplica diretamente a tag fornecida ao jogador.
+     * @param player jogador
+     * @param tag tag a aplicar (null para limpar)
+     */
+    public void apply(Player player, Tag tag) {
+        if (tag != null) {
+            setDisplay(player, tag);
+            applyPermissions(player, tag);
+        } else {
+            clear(player.getUniqueId());
+        }
     }
 
     public void clear(UUID uuid) {

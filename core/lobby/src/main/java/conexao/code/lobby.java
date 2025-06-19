@@ -8,6 +8,7 @@ import conexao.code.manager.ScoreboardManager;
 import conexao.code.manager.TabListManager;
 import conexao.code.manager.SpawnManager;
 import conexao.code.manager.TagManager;
+import conexao.code.manager.TagChannelListener;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,6 +32,9 @@ public class lobby extends JavaPlugin implements Listener {
         tabListManager.applyAll();
         spawnManager = new SpawnManager(this);
         tagManager = new TagManager(this);
+        getServer().getMessenger().registerIncomingPluginChannel(this, TagChannelListener.TAG_CHANNEL,
+                new TagChannelListener(this, tagManager));
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Bukkit.getPluginManager().registerEvents(this, this);
         getCommand("recarregar").setExecutor(new ReloadCommand(this, scoreboardManager, tabListManager));
         getCommand("setspawn").setExecutor(new SetSpawnCommand(spawnManager));
