@@ -59,6 +59,27 @@ public class DatabaseManager {
                             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
             );
 
+            // 4) Cria tabela de tags
+            stmt.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS tags (" +
+                            "id INT AUTO_INCREMENT PRIMARY KEY," +
+                            "name VARCHAR(32) NOT NULL UNIQUE," +
+                            "color VARCHAR(16)," +
+                            "prefix VARCHAR(32)," +
+                            "suffix VARCHAR(32)," +
+                            "permissions TEXT" +
+                            ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
+            );
+
+            // 5) Cria tabela de relacionamento entre usuários e tags
+            stmt.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS user_tags (" +
+                            "user_uuid VARCHAR(36) NOT NULL PRIMARY KEY," +
+                            "tag_id INT NOT NULL," +
+                            "FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE" +
+                            ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
+            );
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
