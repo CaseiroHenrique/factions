@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'conexao.code'
+version = '1.0-SNAPSHOT'
+
+// Gerar bytecode Java 8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc-repo'
+        url  = 'https://repo.papermc.io/repository/maven-public/'
+    }
+    maven {
+        name = 'spigot-snapshots'
+        url  = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+}
+
+dependencies {
+    // Inclui common e jBCrypt no fat-JAR
+    implementation project(':common')
+    implementation 'org.mindrot:jbcrypt:0.4'
+
+    // Spigot API continua só para compilação
+    compileOnly 'org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// Injeta a versão no plugin.yml
+processResources {
+    inputs.property 'version', version
+    filteringCharset = 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand 'version': version
+    }
+}
+
+// Configura o fat-JAR (substitui o jar padrão)
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    archiveBaseName.set('loginserver')
+    archiveClassifier.set('')       // sem classifier "-all"
+    relocate 'conexao.code.common', 'conexao.code.loginserver.common'
+}
+
+// Desabilita o JAR simples, para evitar confusão
+tasks.named('jar') {
+    enabled = false
+}
+
+// Garante que build produza o fat-JAR
+tasks.named('build') {
+    dependsOn tasks.named('shadowJar')
+}

@@ -1,0 +1,13 @@
+name: lobby
+main: conexao.code.lobby
+version: 1.0-SNAPSHOT
+api-version: 1.13
+commands:
+  recarregar:
+    description: Recarrega o scoreboard e tablist do lobby
+    usage: /recarregar
+    aliases: [reload]
+permissions:
+  lobby.reload:
+    description: Permite usar /recarregar
+    default: op

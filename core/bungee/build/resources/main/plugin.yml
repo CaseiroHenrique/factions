@@ -1,0 +1,4 @@
+name: bungee
+version: '1.0-SNAPSHOT'
+main: conexao.code.Bungee
+api-version: '1.21'

@@ -1,0 +1,38 @@
+mysql:
+  host: 145.223.29.205
+  port: 3305
+  database: minecraft
+  user: root
+  password: minecraft
+
+redis:
+  host: "145.223.29.205"               # endereço do seu servidor Redis
+  port: 6379                      # porta padrão do Redis
+  password: "minecraft"                    # deixe vazio se não usar senha
+  timeoutMillis: 2000             # timeout de conexão em ms
+  sessionTtlSeconds: 86400        # TTL padrão das sessões em cache (24 h)
+# tempo para autenticar (em segundos)
+login-timeout-seconds: 60
+
+# mensagens de prompt
+messages:
+  prompt-login: "&eUtilize o comando: &f/login <senha>"
+  prompt-register: "&eUtilize o comando: &f/register <senha> <confirmar-senha>"
+  kick-timeout: "&cVocê demorou muito para logar. Tente novamente!"
+
+# scoreboard lateral
+scoreboard:
+  title: "&cREDE COMMUNITY"
+  lines:
+    - ""
+    - "&fFaça seu registro!"
+    - "&7/registrar <senha> <senha>"
+    - ""
+    - "&fFaça seu login!"
+    - "&7/login <senha>"
+    - ""
+    - "&floja.redecommunity.com"
+
+registration:
+  # Quantas contas, no máximo, um mesmo IP pode registrar
+  max-accounts-per-ip: 3

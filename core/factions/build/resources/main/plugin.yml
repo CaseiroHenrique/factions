@@ -1,0 +1,4 @@
+name: factions
+version: '1.0-SNAPSHOT'
+main: conexao.code.factions
+api-version: '1.21'

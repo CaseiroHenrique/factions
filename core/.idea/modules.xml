@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bungee/core.bungee.main.iml" filepath="$PROJECT_DIR$/.idea/modules/bungee/core.bungee.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/core.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/core.common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/factions/core.factions.main.iml" filepath="$PROJECT_DIR$/.idea/modules/factions/core.factions.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lobby/core.lobby.main.iml" filepath="$PROJECT_DIR$/.idea/modules/lobby/core.lobby.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loginserver/core.loginserver.main.iml" filepath="$PROJECT_DIR$/.idea/modules/loginserver/core.loginserver.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core.main.iml" />
+    </modules>
+  </component>
+</project>

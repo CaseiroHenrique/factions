@@ -1,0 +1,31 @@
+mysql:
+  host: minecraft
+  port: 3306
+  database: minecraft
+  user: root
+  password: minecraft
+
+enable-scoreboard: true
+enable-tablist: true
+update-interval-ticks: 20  # 1 second
+
+# ----- Scoreboard -----
+scoreboard:
+  title: '&cCOMMUNITY'
+  update-interval-ticks: 20
+  lines:
+    - '&0 '                         # linha em branco (única por conter &0)
+    - '&7Lobby: &f#3'
+    - '&7 '                         # outra linha em branco
+    - '&c# Factions Fire:'
+    - '&a%online%/&c500 jogando!'
+    - '&7 '                         # em branco
+    - '&7CP: &f%cp%'
+    - '&7Cash: &6%cash%'
+    - '&8 '                         # em branco final
+    - '&8redecommunity.com'
+
+# ----- TabList -----
+tablist:
+  header: '&cCOMMUNITY'
+  footer: '&8redecommunity.com'

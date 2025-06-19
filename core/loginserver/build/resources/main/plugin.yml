@@ -1,0 +1,11 @@
+name: loginserver
+main: conexao.code.Loginserver
+api-version: '1.21'
+version: 1.0
+commands:
+  register:
+    description: Registra uma nova conta
+    usage: /register <senha>
+  login:
+    description: Faz login na sua conta
+    usage: /login <senha>

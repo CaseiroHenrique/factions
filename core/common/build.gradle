@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'conexao.code'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Driver MySQL (mantido como compileOnly se for provido pelo container/plugin loader)
+    compileOnly 'mysql:mysql-connector-java:8.0.32'
+    // BCrypt para hash de senha
+    compileOnly 'org.mindrot:jbcrypt:0.4'
+    // Redis client (Jedis) disponível em runtime e compile time
+    implementation 'redis.clients:jedis:4.3.2'
+}

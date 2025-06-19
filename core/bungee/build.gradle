@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group = 'conexao.code'
+version = '1.0-SNAPSHOT'
+
+// use Java 8 (ou a versão que seu proxy exigir)
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+    // Papermc hospeda o waterfall-api
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    implementation project(':common')
+    // em vez de bungeecord-api, use waterfall-api (versão compatível com seu proxy Waterfall)
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.21-R0.1-SNAPSHOT'
+    compileOnly 'com.google.guava:guava:31.1-jre'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
