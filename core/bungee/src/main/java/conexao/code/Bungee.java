@@ -57,7 +57,7 @@ public class Bungee extends Plugin implements Listener {
             ByteArrayDataInput in = ByteStreams.newDataInput(e.getData());
             String type = in.readUTF();
             if ("GLOBAL".equalsIgnoreCase(type)) {
-                String server = in.readUTF();
+                // O servidor de origem não é mais enviado pelo plugin de chat.
                 String name = in.readUTF();
                 String message = in.readUTF();
                 String targets = in.readUTF();
