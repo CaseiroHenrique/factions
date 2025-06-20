@@ -1,0 +1,7 @@
+name: HyzeFactions
+version: "${version}"
+main: conexao.code.factionsplugin.FactionsPlugin
+api-version: '1.21'
+commands:
+  f:
+    description: Comandos de facção
