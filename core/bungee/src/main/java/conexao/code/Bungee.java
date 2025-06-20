@@ -10,12 +10,14 @@ import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
+import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -101,14 +103,14 @@ public class Bungee extends Plugin implements Listener {
                 }
             }
             if (!existing.isEmpty()) {
-                PlayerListItem pkt = new PlayerListItem();
-                pkt.setAction(PlayerListItem.Action.ADD_PLAYER);
+                PlayerListItemUpdate pkt = new PlayerListItemUpdate();
+                pkt.setActions(EnumSet.of(PlayerListItemUpdate.Action.ADD_PLAYER));
                 pkt.setItems(existing.toArray(new PlayerListItem.Item[0]));
                 joined.unsafe().sendPacket(pkt);
             }
 
-            PlayerListItem pktNew = new PlayerListItem();
-            pktNew.setAction(PlayerListItem.Action.ADD_PLAYER);
+            PlayerListItemUpdate pktNew = new PlayerListItemUpdate();
+            pktNew.setActions(EnumSet.of(PlayerListItemUpdate.Action.ADD_PLAYER));
             pktNew.setItems(new PlayerListItem.Item[]{toItem(joined)});
             for (ProxiedPlayer p : getProxy().getPlayers()) {
                 p.unsafe().sendPacket(pktNew);
