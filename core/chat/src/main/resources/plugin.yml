@@ -15,4 +15,4 @@ commands:
 permissions:
   lobby.chat:
     description: Permite conversar no lobby
-    default: true
+    default: false
