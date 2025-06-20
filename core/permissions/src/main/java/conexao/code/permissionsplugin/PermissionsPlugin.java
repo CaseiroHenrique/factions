@@ -25,11 +25,13 @@ import org.bukkit.ChatColor;
 public class PermissionsPlugin extends JavaPlugin implements Listener {
     private final Map<UUID, PermissionAttachment> attachments = new HashMap<>();
     private final Map<UUID, Tag> tags = new HashMap<>();
+    private String defaultTagName;
 
     @Override
     public void onEnable() {
         // Inicializa configuracao e banco de dados
         saveDefaultConfig();
+        defaultTagName = getConfig().getString("default-tag");
         String host     = getConfig().getString("mysql.host");
         int    port     = getConfig().getInt("mysql.port");
         String database = getConfig().getString("mysql.database");
@@ -68,22 +70,30 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
                 conexao.code.permissions.Tag tag;
                 try {
                     tag = conexao.code.permissions.TagDAO.getTagByUser(p.getUniqueId());
+                    if (tag == null && defaultTagName != null) {
+                        Tag def = conexao.code.permissions.TagDAO.getTagByName(defaultTagName);
+                        if (def != null) {
+                            conexao.code.permissions.TagDAO.assignTagToUser(p.getUniqueId(), def.getId());
+                            tag = def;
+                        }
+                    }
                 } catch (Exception ex) {
                     getLogger().warning("Erro ao carregar tag: " + ex.getMessage());
                     return;
                 }
                 if (tag == null) return;
+                final Tag finalTag = tag;
                 org.bukkit.Bukkit.getScheduler().runTask(PermissionsPlugin.this, () -> {
                     PermissionAttachment att = attachments.remove(p.getUniqueId());
                     if (att != null) p.removeAttachment(att);
                     att = p.addAttachment(PermissionsPlugin.this);
                     attachments.put(p.getUniqueId(), att);
-                    for (String perm : tag.getPermissions()) {
+                    for (String perm : finalTag.getPermissions()) {
                         att.setPermission(perm, true);
                     }
-                    tags.put(p.getUniqueId(), tag);
-                    String coloredPrefix = ChatColor.translateAlternateColorCodes('&', tag.getColor() + tag.getPrefix());
-                    String coloredName = ChatColor.translateAlternateColorCodes('&', tag.getColor() + p.getName());
+                    tags.put(p.getUniqueId(), finalTag);
+                    String coloredPrefix = ChatColor.translateAlternateColorCodes('&', finalTag.getColor() + finalTag.getPrefix());
+                    String coloredName = ChatColor.translateAlternateColorCodes('&', finalTag.getColor() + p.getName());
                     String full = coloredPrefix + " " + coloredName;
                     p.setDisplayName(full);
                     p.setPlayerListName(full);

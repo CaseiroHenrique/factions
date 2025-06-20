@@ -4,3 +4,5 @@ mysql:
   database: minecraft
   user: root
   password: minecraft
+# Tag atribuída automaticamente a novos jogadores
+default-tag: exemplo
