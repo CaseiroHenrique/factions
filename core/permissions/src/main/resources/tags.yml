@@ -1,0 +1,7 @@
+tags:
+  exemplo:
+    color: "&a"
+    prefix: "[Exemplo]"
+    suffix: ""
+    permissions:
+      - exemplo.permissao

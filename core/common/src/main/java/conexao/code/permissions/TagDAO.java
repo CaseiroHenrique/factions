@@ -73,6 +73,22 @@ public class TagDAO {
         }
     }
 
+    /**
+     * Atualiza todas as informações da tag.
+     */
+    public static void updateTag(Tag tag) throws SQLException {
+        String sql = "UPDATE tags SET color=?, prefix=?, suffix=?, permissions=? WHERE id=?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, tag.getColor());
+            ps.setString(2, tag.getPrefix());
+            ps.setString(3, tag.getSuffix());
+            ps.setString(4, String.join(",", tag.getPermissions()));
+            ps.setInt(5, tag.getId());
+            ps.executeUpdate();
+        }
+    }
+
     public static Tag getTag(int id) throws SQLException {
         String sql = "SELECT * FROM tags WHERE id=?";
         try (Connection conn = DatabaseManager.getConnection();
