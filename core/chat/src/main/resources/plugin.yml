@@ -1,0 +1,8 @@
+name: chat
+main: conexao.code.ChatPlugin
+version: ${version}
+api-version: 1.21
+commands:
+  g:
+    description: Chat global
+    usage: /g <mensagem>

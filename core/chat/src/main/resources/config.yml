@@ -1,0 +1,8 @@
+# Nome deste servidor conforme definido no proxy
+server-name: factions
+# Raio do chat local. Defina 0 ou negativo para alcance ilimitado
+local-radius: 60
+# Servidores que receberão o chat global enviado deste servidor
+global-servers:
+  - factions
+  - mina

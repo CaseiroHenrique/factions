@@ -25,13 +25,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Bungee extends Plugin implements Listener {
     private static final String AUTH_CHANNEL = "core:auth";
+    private static final String CHAT_CHANNEL = "core:chat";
     private final Set<String> authenticated = ConcurrentHashMap.newKeySet();
     private ServerInfo lobby;
 
     @Override
     public void onEnable() {
-        // registra canal BungeeCord e listener
+        // registra canais e listener
         getProxy().registerChannel("BungeeCord");
+        getProxy().registerChannel(CHAT_CHANNEL);
         getProxy().getPluginManager().registerListener(this, this);
         lobby = getProxy().getServerInfo("lobby");
     }
@@ -51,6 +53,26 @@ public class Bungee extends Plugin implements Listener {
 
     @EventHandler
     public void onPluginMessage(PluginMessageEvent e) {
+        if (CHAT_CHANNEL.equals(e.getTag())) {
+            ByteArrayDataInput in = ByteStreams.newDataInput(e.getData());
+            String type = in.readUTF();
+            if ("GLOBAL".equalsIgnoreCase(type)) {
+                String server = in.readUTF();
+                String name = in.readUTF();
+                String message = in.readUTF();
+                String targets = in.readUTF();
+                String formatted = "[" + server + "] " + name + ": " + message;
+                for (String s : targets.split(",")) {
+                    ServerInfo info = getProxy().getServerInfo(s.trim());
+                    if (info != null) {
+                        for (ProxiedPlayer p : info.getPlayers()) {
+                            p.sendMessage(new TextComponent(formatted));
+                        }
+                    }
+                }
+            }
+            return;
+        }
         if (!"BungeeCord".equals(e.getTag())) return;
         ByteArrayDataInput in = ByteStreams.newDataInput(e.getData());
         String sub = in.readUTF();
