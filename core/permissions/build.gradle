@@ -33,3 +33,20 @@ processResources {
     filteringCharset = 'UTF-8'
     filesMatching('plugin.yml') { expand version: version }
 }
+
+// Copia o plugin gerado para as pastas dos servidores lobby e factions
+tasks.register('copyToFactions', Copy) {
+    dependsOn tasks.named('jar')
+    from tasks.named('jar')
+    into new File('E:/hyze/factions/plugins')
+}
+
+tasks.register('copyToLobby', Copy) {
+    dependsOn tasks.named('jar')
+    from tasks.named('jar')
+    into new File('E:/hyze/lobby/plugins')
+}
+
+tasks.named('build') {
+    finalizedBy tasks.named('copyToFactions'), tasks.named('copyToLobby')
+}
