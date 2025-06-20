@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import conexao.code.common.DatabaseManager;
 import conexao.code.common.factions.FactionMemberDAO;
 import conexao.code.common.factions.FactionRank;
+import java.util.Optional;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -74,9 +75,12 @@ public class ChatPlugin extends JavaPlugin implements Listener {
         String factionTag = null;
         String icon = "";
         try {
-            factionTag = FactionMemberDAO.getFactionTag(sender.getUniqueId()).orElse(null);
-            FactionRank rank = FactionMemberDAO.getRank(sender.getUniqueId()).orElse(null);
-            if (rank != null) icon = rank.getIcon();
+            Optional<String> tagOpt = FactionMemberDAO.getFactionTag(sender.getUniqueId());
+            if (tagOpt.isPresent()) {
+                factionTag = tagOpt.get();
+                FactionRank rank = FactionMemberDAO.getRank(sender.getUniqueId()).orElse(null);
+                if (rank != null) icon = rank.getIcon();
+            }
         } catch (Exception ignored) {}
         if (factionTag != null) {
             formatted = ChatColor.GRAY + "[L] " + ChatColor.GRAY + "[" + icon + " " + factionTag + "] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
@@ -100,9 +104,12 @@ public class ChatPlugin extends JavaPlugin implements Listener {
         String factionTag = null;
         String icon = "";
         try {
-            factionTag = FactionMemberDAO.getFactionTag(sender.getUniqueId()).orElse(null);
-            FactionRank rank = FactionMemberDAO.getRank(sender.getUniqueId()).orElse(null);
-            if (rank != null) icon = rank.getIcon();
+            Optional<String> tagOpt = FactionMemberDAO.getFactionTag(sender.getUniqueId());
+            if (tagOpt.isPresent()) {
+                factionTag = tagOpt.get();
+                FactionRank rank = FactionMemberDAO.getRank(sender.getUniqueId()).orElse(null);
+                if (rank != null) icon = rank.getIcon();
+            }
         } catch (Exception ignored) {}
         String formatted;
         if (factionTag != null) {

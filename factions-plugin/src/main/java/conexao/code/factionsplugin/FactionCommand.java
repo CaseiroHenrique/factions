@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.Map;
 import java.util.UUID;
@@ -131,13 +132,18 @@ public class FactionCommand implements CommandExecutor {
             }
             FactionsPlugin.Invite invite = new FactionsPlugin.Invite(factionId, player.getUniqueId(), now + 5 * 60_000L);
             invites.put(target.getUniqueId(), invite);
-            TextComponent accept = Component.text(ChatColor.GREEN + "[Sim]")
+            TextComponent accept = Component.text("[Sim]", NamedTextColor.GREEN)
                     .clickEvent(ClickEvent.runCommand("/f aceitar"));
-            TextComponent deny = Component.text(ChatColor.RED + "[Não]")
+            TextComponent deny = Component.text("[Não]", NamedTextColor.RED)
                     .clickEvent(ClickEvent.runCommand("/nao"));
             target.sendMessage(ChatColor.YELLOW + "Facção " + FactionDAO.getTagById(factionId).orElse("") + " te convidou");
             target.sendMessage(ChatColor.YELLOW + "Deseja aceitar?");
-            target.spigot().sendMessage(accept, Component.text(" "), deny);
+            Component message = Component.text()
+                    .append(accept)
+                    .append(Component.space())
+                    .append(deny)
+                    .build();
+            target.sendMessage(message);
             player.sendMessage(ChatColor.GREEN + "Convite enviado para " + target.getName());
         } catch (Exception e) {
             player.sendMessage(ChatColor.RED + "Erro ao convidar jogador.");
