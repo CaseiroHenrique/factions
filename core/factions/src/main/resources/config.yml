@@ -2,5 +2,14 @@
 # Somente tablist por enquanto
 
 tablist:
-  header: '&cCOMMUNITY'
-  footer: '&8redecommunity.com'
+  headerLines:
+    - ''
+    - '&6&lHYZE'
+    - ''
+  footerLines:
+    - ''
+    - '&fPrecisa de ajuda? Acesse nosso Discord!'
+    - '&7discord.gg/hyze'
+    - ''
+    - '&6lojar.hyze.net'
+    - ''
