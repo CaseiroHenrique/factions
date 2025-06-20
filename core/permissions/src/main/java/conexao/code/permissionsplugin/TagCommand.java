@@ -50,6 +50,9 @@ public class TagCommand implements CommandExecutor {
             case "remove":
                 removeTag(sender, args);
                 break;
+            case "reload":
+                reloadTags(sender);
+                break;
             default:
                 sendUsage(sender);
                 break;
@@ -58,7 +61,7 @@ public class TagCommand implements CommandExecutor {
     }
 
     private void sendUsage(CommandSender sender) {
-        sender.sendMessage(ChatColor.YELLOW + "Uso: /tag <create|addperm|removeperm|assign|remove> ...");
+        sender.sendMessage(ChatColor.YELLOW + "Uso: /tag <create|addperm|removeperm|assign|remove|reload> ...");
     }
 
     private void createTag(CommandSender sender, String[] args) {
@@ -175,5 +178,10 @@ public class TagCommand implements CommandExecutor {
                 }
             }
         }.runTaskAsynchronously(plugin);
+    }
+
+    private void reloadTags(CommandSender sender) {
+        plugin.reloadTags();
+        sender.sendMessage(ChatColor.GREEN + "Tags recarregadas do arquivo.");
     }
 }

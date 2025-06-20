@@ -138,4 +138,11 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
             }.runTaskAsynchronously(this);
         }
     }
+
+    /**
+     * Recarrega as tags a partir do arquivo tags.yml.
+     */
+    public void reloadTags() {
+        loadTagsFromFile();
+    }
 }
