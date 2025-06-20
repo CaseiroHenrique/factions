@@ -37,3 +37,18 @@ scoreboard:
 tablist:
   header: '&cCOMMUNITY'
   footer: '&8redecommunity.com'
+
+# ----- Servidores -----
+servers:
+  - slot: 11
+    item: DIAMOND_SWORD
+    name: '&cFactions'
+    lore:
+      - '&7Servidor focado em Factions'
+    server: factions
+  - slot: 15
+    item: GRASS_BLOCK
+    name: '&aSkyWars'
+    lore:
+      - '&7Entre em partidas rápidas de SkyWars'
+    server: skywars
