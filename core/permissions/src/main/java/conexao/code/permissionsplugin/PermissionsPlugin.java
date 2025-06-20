@@ -7,6 +7,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.File;
+import java.util.HashSet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +26,7 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         getCommand("tag").setExecutor(new TagCommand(this));
+        loadTagsFromFile();
     }
 
     @Override
@@ -61,5 +69,40 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
                 });
             }
         }.runTaskAsynchronously(this);
+    }
+
+    private void loadTagsFromFile() {
+        File file = new File(getDataFolder(), "tags.yml");
+        if (!file.exists()) {
+            saveResource("tags.yml", false);
+        }
+        FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection sec = cfg.getConfigurationSection("tags");
+        if (sec == null) return;
+        for (String name : sec.getKeys(false)) {
+            ConfigurationSection t = sec.getConfigurationSection(name);
+            if (t == null) continue;
+            String color = t.getString("color", "");
+            String prefix = t.getString("prefix", "");
+            String suffix = t.getString("suffix", "");
+            HashSet<String> perms = new HashSet<>(t.getStringList("permissions"));
+            conexao.code.permissions.Tag tag = new conexao.code.permissions.Tag(0, name, color, prefix, suffix, perms);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        conexao.code.permissions.Tag existing = conexao.code.permissions.TagDAO.getTagByName(name);
+                        if (existing == null) {
+                            conexao.code.permissions.TagDAO.createTag(tag);
+                        } else {
+                            tag.setId(existing.getId());
+                            conexao.code.permissions.TagDAO.updateTag(tag);
+                        }
+                    } catch (Exception ex) {
+                        getLogger().warning("Erro ao processar tag '" + name + "': " + ex.getMessage());
+                    }
+                }
+            }.runTaskAsynchronously(this);
+        }
     }
 }
