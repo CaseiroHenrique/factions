@@ -9,6 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import conexao.code.common.DatabaseManager;
+import conexao.code.common.factions.FactionMemberDAO;
+import conexao.code.common.factions.FactionRank;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -69,7 +71,18 @@ public class ChatPlugin extends JavaPlugin implements Listener {
             return;
         }
 
-        formatted = ChatColor.YELLOW + "[L] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
+        String factionTag = null;
+        String icon = "";
+        try {
+            factionTag = FactionMemberDAO.getFactionTag(sender.getUniqueId()).orElse(null);
+            FactionRank rank = FactionMemberDAO.getRank(sender.getUniqueId()).orElse(null);
+            if (rank != null) icon = rank.getIcon();
+        } catch (Exception ignored) {}
+        if (factionTag != null) {
+            formatted = ChatColor.GRAY + "[L] " + ChatColor.GRAY + "[" + icon + " " + factionTag + "] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
+        } else {
+            formatted = ChatColor.GRAY + "[L] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
+        }
         if (localRadius <= 0) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(formatted);
@@ -84,7 +97,19 @@ public class ChatPlugin extends JavaPlugin implements Listener {
     }
 
     void sendGlobalMessage(Player sender, String message) {
-        String formatted = ChatColor.GRAY + "[G] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.RESET + message;
+        String factionTag = null;
+        String icon = "";
+        try {
+            factionTag = FactionMemberDAO.getFactionTag(sender.getUniqueId()).orElse(null);
+            FactionRank rank = FactionMemberDAO.getRank(sender.getUniqueId()).orElse(null);
+            if (rank != null) icon = rank.getIcon();
+        } catch (Exception ignored) {}
+        String formatted;
+        if (factionTag != null) {
+            formatted = ChatColor.GRAY + "[G] " + ChatColor.GRAY + "[" + icon + " " + factionTag + "] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.RESET + message;
+        } else {
+            formatted = ChatColor.GRAY + "[G] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.RESET + message;
+        }
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.sendMessage(formatted);
         }
