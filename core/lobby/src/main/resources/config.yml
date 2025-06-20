@@ -41,7 +41,7 @@ tablist:
 # ----- Servidores -----
 servers:
   - slot: 11
-    item: DIAMOND_SWORD
+    head-owner: Notch
     name: '&cFactions'
     lore:
       - '&7Servidor focado em Factions'
