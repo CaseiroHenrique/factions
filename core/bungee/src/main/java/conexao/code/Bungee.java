@@ -6,11 +6,10 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
-import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
@@ -90,11 +89,11 @@ public class Bungee extends Plugin implements Listener {
     }
 
     @EventHandler
-    public void onPostLogin(PostLoginEvent e) {
+    public void onServerConnected(ServerConnectedEvent e) {
         final ProxiedPlayer joined = e.getPlayer();
 
-        // Aguarda breve período para garantir handshake concluído
-        getProxy().getScheduler().schedule(this, () -> {
+        // Envia informações da lista de jogadores após a conexão
+        getProxy().getScheduler().runAsync(this, () -> {
             List<PlayerListItem.Item> existing = new ArrayList<>();
             for (ProxiedPlayer p : getProxy().getPlayers()) {
                 if (p != joined) {
@@ -114,7 +113,7 @@ public class Bungee extends Plugin implements Listener {
             for (ProxiedPlayer p : getProxy().getPlayers()) {
                 p.unsafe().sendPacket(pktNew);
             }
-        }, 100, TimeUnit.MILLISECONDS);
+        });
     }
 
     @EventHandler
