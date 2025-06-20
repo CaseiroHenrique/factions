@@ -7,28 +7,12 @@ public class DatabaseManager {
     private static String url;
     private static String user;
     private static String pass;
+    private static boolean tablesEnsured = false;
 
-    /**
-     * Inicializa a conexão e garante a criação das tabelas necessárias.
-     *
-     * @param host       endereço do servidor MySQL
-     * @param port       porta do MySQL
-     * @param database   nome do banco de dados
-     * @param username   usuário do banco
-     * @param password   senha do banco
-     */
-    public static void init(String host, int port, String database, String username, String password) {
-        // Monta a URL de conexão
-        url  = String.format(
-                "jdbc:mysql://%s:%d/%s?useSSL=false&autoReconnect=true&allowPublicKeyRetrieval=true",
-                host, port, database
-        );
-        user = username;
-        pass = password;
+    private static synchronized void ensureTablesExist(Connection conn) throws SQLException {
+        if (tablesEnsured) return;
 
-        try (Connection conn = DriverManager.getConnection(url, user, pass);
-             Statement stmt = conn.createStatement()) {
-
+        try (Statement stmt = conn.createStatement()) {
             // 1) Cria tabela users incluindo ip_address
             stmt.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS users (" +
@@ -77,7 +61,31 @@ public class DatabaseManager {
                             "FOREIGN KEY(tag_id) REFERENCES tags(id) ON DELETE CASCADE" +
                             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
             );
+        }
 
+        tablesEnsured = true;
+    }
+
+    /**
+     * Inicializa a conexão e garante a criação das tabelas necessárias.
+     *
+     * @param host       endereço do servidor MySQL
+     * @param port       porta do MySQL
+     * @param database   nome do banco de dados
+     * @param username   usuário do banco
+     * @param password   senha do banco
+     */
+    public static void init(String host, int port, String database, String username, String password) {
+        // Monta a URL de conexão
+        url  = String.format(
+                "jdbc:mysql://%s:%d/%s?useSSL=false&autoReconnect=true&allowPublicKeyRetrieval=true",
+                host, port, database
+        );
+        user = username;
+        pass = password;
+
+        try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+            ensureTablesExist(conn);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -90,7 +98,9 @@ public class DatabaseManager {
      * @throws SQLException em caso de falha na conexão
      */
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, pass);
+        Connection conn = DriverManager.getConnection(url, user, pass);
+        ensureTablesExist(conn);
+        return conn;
     }
 
     /**
