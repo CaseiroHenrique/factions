@@ -14,7 +14,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+
+import java.lang.reflect.Field;
+import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,19 +44,37 @@ public class ServerSelectorMenu implements Listener {
         FileConfiguration cfg = plugin.getConfig();
         List<Map<?, ?>> servers = cfg.getMapList("servers");
         for (Map<?, ?> map : servers) {
-            Object slotObj = map.get("slot");
-            Object itemObj = map.get("item");
-            Object nameObj = map.get("name");
-            Object loreObj = map.get("lore");
+            Object slotObj   = map.get("slot");
+            Object itemObj   = map.get("item");
+            Object headObj   = map.get("head");
+            Object nameObj   = map.get("name");
+            Object loreObj   = map.get("lore");
             Object serverObj = map.get("server");
-            if (slotObj == null || itemObj == null || serverObj == null) continue;
+
+            if (slotObj == null || serverObj == null) continue;
             int slot = (int) slotObj;
-            Material mat = Material.matchMaterial(String.valueOf(itemObj));
-            if (mat == null || slot < 0 || slot >= menu.getSize()) continue;
+            if (slot < 0 || slot >= menu.getSize()) continue;
+
+            ItemStack item = null;
+            Material mat = null;
+
+            if (headObj != null) {
+                String skin = String.valueOf(headObj);
+                item = createHead(skin);
+                mat = item.getType();
+            } else if (itemObj != null) {
+                mat = Material.matchMaterial(String.valueOf(itemObj));
+                if (mat != null) {
+                    item = new ItemStack(mat);
+                }
+            }
+
+            if (item == null || mat == null) continue;
+
             String name = nameObj != null ? String.valueOf(nameObj) : mat.name();
             @SuppressWarnings("unchecked")
             List<String> lore = loreObj instanceof List ? (List<String>) loreObj : List.of();
-            ItemStack item = new ItemStack(mat);
+
             ItemMeta meta = item.getItemMeta();
             if (meta != null) {
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
@@ -61,9 +85,33 @@ public class ServerSelectorMenu implements Listener {
                 meta.setLore(cLore);
                 item.setItemMeta(meta);
             }
+
             menu.setItem(slot, item);
             serverBySlot.put(slot, String.valueOf(serverObj));
         }
+    }
+
+    private ItemStack createHead(String skin) {
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) head.getItemMeta();
+
+        if (meta != null) {
+            if (skin.startsWith("eyJ")) {
+                GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+                profile.getProperties().put("textures", new Property("textures", skin));
+                try {
+                    Field profileField = meta.getClass().getDeclaredField("profile");
+                    profileField.setAccessible(true);
+                    profileField.set(meta, profile);
+                } catch (NoSuchFieldException | IllegalAccessException ignored) {
+                }
+            } else {
+                meta.setOwningPlayer(Bukkit.getOfflinePlayer(skin));
+            }
+            head.setItemMeta(meta);
+        }
+
+        return head;
     }
 
     private void connect(Player player, String server) {

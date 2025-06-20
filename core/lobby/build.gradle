@@ -27,6 +27,7 @@ dependencies {
     implementation project(':common')                           // embute DatabaseManager
     compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
     compileOnly 'com.google.guava:guava:31.1-jre'               // para ByteStreams, ByteArrayDataInput
+    compileOnly 'com.mojang:authlib:1.5.21'
     implementation 'org.mindrot:jbcrypt:0.4'
 }
 

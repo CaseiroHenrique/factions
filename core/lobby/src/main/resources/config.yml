@@ -47,7 +47,8 @@ servers:
       - '&7Servidor focado em Factions'
     server: factions
   - slot: 15
-    item: GRASS_BLOCK
+    # Especifique 'head' com o nome de jogador ou textura Base64
+    head: MHF_Chest
     name: '&aSkyWars'
     lore:
       - '&7Entre em partidas rápidas de SkyWars'
