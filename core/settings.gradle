@@ -1,2 +1,2 @@
 rootProject.name = 'core'
-include 'common', 'lobby', 'factions', 'bungee', 'loginserver'
+include 'common', 'lobby', 'factions', 'bungee', 'loginserver', 'chat'
