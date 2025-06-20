@@ -6,3 +6,13 @@ commands:
   g:
     description: Chat global
     usage: /g <mensagem>
+  tell:
+    description: Mensagem privada
+    usage: /tell <jogador> <mensagem>
+  r:
+    description: Responde \u00e0 \u00faltima mensagem privada
+    usage: /r <mensagem>
+permissions:
+  lobby.chat:
+    description: Permite conversar no lobby
+    default: true
