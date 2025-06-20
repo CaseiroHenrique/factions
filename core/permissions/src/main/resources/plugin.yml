@@ -1,0 +1,12 @@
+name: permissions
+main: conexao.code.permissionsplugin.PermissionsPlugin
+version: ${version}
+api-version: 1.21
+commands:
+  tag:
+    description: Gerencia tags e permissões
+    usage: /tag <subcomando>
+permissions:
+  permissions.manage:
+    description: Permite gerenciar tags
+    default: op
