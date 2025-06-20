@@ -45,7 +45,12 @@ public class ChatPlugin extends JavaPlugin implements Listener {
         e.setCancelled(true);
         Player sender = e.getPlayer();
         String message = e.getMessage();
-        String formatted = ChatColor.GRAY + "[L] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.RESET + message;
+        String formatted;
+        if (serverName.equalsIgnoreCase("lobby")) {
+            formatted = ChatColor.WHITE + "[Lobby #1] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
+        } else {
+            formatted = ChatColor.YELLOW + "[L] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
+        }
         if (localRadius <= 0) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(formatted);

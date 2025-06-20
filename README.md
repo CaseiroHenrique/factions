@@ -7,3 +7,8 @@ textura Base64) em vez de `item`.
 O plugin de chat agora possui a opção `server-name` no `config.yml`. Defina o
 nome deste servidor para evitar mensagens duplicadas quando o chat global estiver
 habilitado.
+
+O prefixo do chat local varia conforme o servidor:
+
+- Para a maioria dos servidores, as mensagens usam o formato `&e[L] <tag-nick>: &7<mensagem>`.
+- No lobby, o prefixo é `&f[Lobby #1] <tag-nick>: &7<mensagem>`.
