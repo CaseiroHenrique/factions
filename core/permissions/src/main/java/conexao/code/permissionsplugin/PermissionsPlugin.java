@@ -19,9 +19,12 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import conexao.code.permissions.Tag;
+import org.bukkit.ChatColor;
 
 public class PermissionsPlugin extends JavaPlugin implements Listener {
     private final Map<UUID, PermissionAttachment> attachments = new HashMap<>();
+    private final Map<UUID, Tag> tags = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -43,6 +46,7 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
     public void onDisable() {
         attachments.values().forEach(PermissionAttachment::remove);
         attachments.clear();
+        tags.clear();
     }
 
     @EventHandler
@@ -54,6 +58,7 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
     public void onQuit(PlayerQuitEvent e) {
         PermissionAttachment att = attachments.remove(e.getPlayer().getUniqueId());
         if (att != null) e.getPlayer().removeAttachment(att);
+        tags.remove(e.getPlayer().getUniqueId());
     }
 
     void loadTag(Player p) {
@@ -76,6 +81,14 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
                     for (String perm : tag.getPermissions()) {
                         att.setPermission(perm, true);
                     }
+                    tags.put(p.getUniqueId(), tag);
+                    String coloredPrefix = ChatColor.translateAlternateColorCodes('&', tag.getColor() + tag.getPrefix());
+                    String coloredName = ChatColor.translateAlternateColorCodes('&', tag.getColor() + p.getName());
+                    String full = coloredPrefix + " " + coloredName;
+                    p.setDisplayName(full);
+                    p.setPlayerListName(full);
+                    p.setCustomName(full);
+                    p.setCustomNameVisible(true);
                 });
             }
         }.runTaskAsynchronously(this);

@@ -61,7 +61,7 @@ public class Bungee extends Plugin implements Listener {
                 String name = in.readUTF();
                 String message = in.readUTF();
                 String targets = in.readUTF();
-                String formatted = "\u00a77[G] \u00a7f" + name + "\u00a77: \u00a7r" + message;
+                String formatted = "\u00a77[G] " + name + "\u00a77: \u00a7r" + message;
                 for (String s : targets.split(",")) {
                     ServerInfo info = getProxy().getServerInfo(s.trim());
                     if (info != null) {
