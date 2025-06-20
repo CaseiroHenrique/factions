@@ -22,11 +22,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 public class Bungee extends Plugin implements Listener {
     private static final String AUTH_CHANNEL = "core:auth";
     private static final String CHAT_CHANNEL = "core:chat";
     private final Set<String> authenticated = ConcurrentHashMap.newKeySet();
+    private final Map<String, String> lastTell = new ConcurrentHashMap<>();
     private ServerInfo lobby;
 
     @Override
@@ -69,6 +71,38 @@ public class Bungee extends Plugin implements Listener {
                             p.sendMessage(new TextComponent(formatted));
                         }
                     }
+                }
+            } else if ("TELL".equalsIgnoreCase(type)) {
+                String senderName = in.readUTF();
+                String senderDisplay = in.readUTF();
+                String targetName = in.readUTF();
+                String msg = in.readUTF();
+                ProxiedPlayer senderP = getProxy().getPlayer(senderName);
+                ProxiedPlayer targetP = getProxy().getPlayer(targetName);
+                if (targetP != null && senderP != null) {
+                    String targetDisplay = targetP.getDisplayName();
+                    senderP.sendMessage(new TextComponent("\u00a77Mensagem enviada para " + targetDisplay + ": " + msg));
+                    targetP.sendMessage(new TextComponent("\u00a77Mensagem recebida de " + senderDisplay + ": " + msg));
+                    lastTell.put(senderName.toLowerCase(), targetName.toLowerCase());
+                    lastTell.put(targetName.toLowerCase(), senderName.toLowerCase());
+                } else if (senderP != null) {
+                    senderP.sendMessage(new TextComponent("\u00a7cJogador n\u00e3o encontrado."));
+                }
+            } else if ("REPLY".equalsIgnoreCase(type)) {
+                String senderName = in.readUTF();
+                String senderDisplay = in.readUTF();
+                String msg = in.readUTF();
+                ProxiedPlayer senderP = getProxy().getPlayer(senderName);
+                String targetName = lastTell.get(senderName.toLowerCase());
+                ProxiedPlayer targetP = targetName != null ? getProxy().getPlayer(targetName) : null;
+                if (targetP != null && senderP != null) {
+                    String targetDisplay = targetP.getDisplayName();
+                    senderP.sendMessage(new TextComponent("\u00a77Mensagem enviada para " + targetDisplay + ": " + msg));
+                    targetP.sendMessage(new TextComponent("\u00a77Mensagem recebida de " + senderDisplay + ": " + msg));
+                    lastTell.put(senderName.toLowerCase(), targetName.toLowerCase());
+                    lastTell.put(targetName.toLowerCase(), senderName.toLowerCase());
+                } else if (senderP != null) {
+                    senderP.sendMessage(new TextComponent("\u00a7cNingu\u00e9m para responder."));
                 }
             }
             return;

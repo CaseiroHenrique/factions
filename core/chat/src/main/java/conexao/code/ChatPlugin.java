@@ -36,7 +36,18 @@ public class ChatPlugin extends JavaPlugin implements Listener {
         DatabaseManager.init(host, port, database, user, pass);
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "core:chat");
-        getCommand("g").setExecutor(new GlobalChatCommand(this));
+
+        if (!serverName.equalsIgnoreCase("lobby")) {
+            getCommand("g").setExecutor(new GlobalChatCommand(this));
+        } else {
+            getCommand("g").setExecutor((sender, cmd, label, args) -> {
+                sender.sendMessage(ChatColor.RED + "Chat global indispon\u00edvel no lobby.");
+                return true;
+            });
+        }
+
+        getCommand("tell").setExecutor(new TellCommand(this));
+        getCommand("r").setExecutor(new ReplyCommand(this));
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
@@ -47,10 +58,18 @@ public class ChatPlugin extends JavaPlugin implements Listener {
         String message = e.getMessage();
         String formatted;
         if (serverName.equalsIgnoreCase("lobby")) {
+            if (!sender.hasPermission("lobby.chat")) {
+                sender.sendMessage(ChatColor.RED + "Voc\u00ea n\u00e3o tem permiss\u00e3o para falar no lobby.");
+                return;
+            }
             formatted = ChatColor.WHITE + "[Lobby #1] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
-        } else {
-            formatted = ChatColor.YELLOW + "[L] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                p.sendMessage(formatted);
+            }
+            return;
         }
+
+        formatted = ChatColor.YELLOW + "[L] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
         if (localRadius <= 0) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(formatted);
@@ -87,6 +106,35 @@ public class ChatPlugin extends JavaPlugin implements Listener {
             }
 
             data.writeUTF(String.join(",", targets));
+            sender.sendPluginMessage(this, "core:chat", out.toByteArray());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    void sendTell(Player sender, String target, String message) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            DataOutputStream data = new DataOutputStream(out);
+            data.writeUTF("TELL");
+            data.writeUTF(sender.getName());
+            data.writeUTF(sender.getDisplayName());
+            data.writeUTF(target);
+            data.writeUTF(message);
+            sender.sendPluginMessage(this, "core:chat", out.toByteArray());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    void sendReply(Player sender, String message) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            DataOutputStream data = new DataOutputStream(out);
+            data.writeUTF("REPLY");
+            data.writeUTF(sender.getName());
+            data.writeUTF(sender.getDisplayName());
+            data.writeUTF(message);
             sender.sendPluginMessage(this, "core:chat", out.toByteArray());
         } catch (IOException ex) {
             ex.printStackTrace();
