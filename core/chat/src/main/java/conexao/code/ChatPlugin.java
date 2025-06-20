@@ -17,6 +17,7 @@ import java.util.List;
 public class ChatPlugin extends JavaPlugin implements Listener {
     private double localRadius;
     private List<String> globalTargets;
+    private String serverName;
 
     @Override
     public void onEnable() {
@@ -24,6 +25,7 @@ public class ChatPlugin extends JavaPlugin implements Listener {
         FileConfiguration cfg = getConfig();
         localRadius = cfg.getDouble("local-radius", 60.0);
         globalTargets = cfg.getStringList("global-servers");
+        serverName = cfg.getString("server-name", "");
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "core:chat");
         getCommand("g").setExecutor(new GlobalChatCommand(this));
@@ -63,7 +65,15 @@ public class ChatPlugin extends JavaPlugin implements Listener {
             // os servidores.
             data.writeUTF(sender.getName());
             data.writeUTF(message);
-            data.writeUTF(String.join(",", globalTargets));
+
+            List<String> targets = globalTargets;
+            if (!serverName.isEmpty()) {
+                targets = globalTargets.stream()
+                        .filter(t -> !t.equalsIgnoreCase(serverName))
+                        .toList();
+            }
+
+            data.writeUTF(String.join(",", targets));
             sender.sendPluginMessage(this, "core:chat", out.toByteArray());
         } catch (IOException ex) {
             ex.printStackTrace();

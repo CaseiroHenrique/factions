@@ -1,3 +1,5 @@
+# Nome deste servidor. Usado para evitar mensagens duplicadas no chat global
+server-name: factions
 # Raio do chat local. Defina 0 ou negativo para alcance ilimitado
 local-radius: 60
 # Servidores que receberão o chat global enviado deste servidor
