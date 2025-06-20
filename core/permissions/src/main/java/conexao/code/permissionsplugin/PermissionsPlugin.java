@@ -11,6 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
+import conexao.code.common.DatabaseManager;
 
 import java.io.File;
 import java.util.HashSet;
@@ -24,6 +25,15 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        // Inicializa configuracao e banco de dados
+        saveDefaultConfig();
+        String host     = getConfig().getString("mysql.host");
+        int    port     = getConfig().getInt("mysql.port");
+        String database = getConfig().getString("mysql.database");
+        String user     = getConfig().getString("mysql.user");
+        String pass     = getConfig().getString("mysql.password");
+        DatabaseManager.init(host, port, database, user, pass);
+
         getServer().getPluginManager().registerEvents(this, this);
         getCommand("tag").setExecutor(new TagCommand(this));
         loadTagsFromFile();
