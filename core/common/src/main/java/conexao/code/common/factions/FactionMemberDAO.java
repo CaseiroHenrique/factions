@@ -12,11 +12,11 @@ public class FactionMemberDAO {
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS faction_members (" +
-                            "id INT AUTO_INCREMENT PRIMARY KEY," +
-                            "faction_id INT NOT NULL," +
-                            "player_uuid VARCHAR(36) NOT NULL UNIQUE," +
-                            "rank VARCHAR(16) NOT NULL," +
-                            "FOREIGN KEY(faction_id) REFERENCES factions(id) ON DELETE CASCADE" +
+                            "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                            "faction_id INT NOT NULL, " +
+                            "player_uuid VARCHAR(36) NOT NULL UNIQUE, " +
+                            "`rank` VARCHAR(16) NOT NULL, " +
+                            "FOREIGN KEY (faction_id) REFERENCES factions(id) ON DELETE CASCADE" +
                             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
             );
         }
