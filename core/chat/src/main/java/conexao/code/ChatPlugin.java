@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class ChatPlugin extends JavaPlugin implements Listener {
-    private String serverName;
     private double localRadius;
     private List<String> globalTargets;
 
@@ -23,7 +22,6 @@ public class ChatPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
         saveDefaultConfig();
         FileConfiguration cfg = getConfig();
-        serverName = cfg.getString("server-name", "server");
         localRadius = cfg.getDouble("local-radius", 60.0);
         globalTargets = cfg.getStringList("global-servers");
 
@@ -60,7 +58,9 @@ public class ChatPlugin extends JavaPlugin implements Listener {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             DataOutputStream data = new DataOutputStream(out);
             data.writeUTF("GLOBAL");
-            data.writeUTF(serverName);
+            // Não enviamos mais o nome do servidor de origem, apenas o jogador
+            // e a mensagem, garantindo que o prefixo [G] seja o mesmo em todos
+            // os servidores.
             data.writeUTF(sender.getName());
             data.writeUTF(message);
             data.writeUTF(String.join(",", globalTargets));
