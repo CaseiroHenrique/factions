@@ -52,7 +52,7 @@ public class ChatPlugin extends JavaPlugin implements Listener {
     }
 
     void sendGlobalMessage(Player sender, String message) {
-        String formatted = ChatColor.YELLOW + "[G] " + ChatColor.WHITE + sender.getName() + ChatColor.YELLOW + ": " + ChatColor.RESET + message;
+        String formatted = ChatColor.GRAY + "[G] " + ChatColor.WHITE + sender.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + message;
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.sendMessage(formatted);
         }
