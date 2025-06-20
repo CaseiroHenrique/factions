@@ -1,0 +1,6 @@
+# Configuração do plugin de Factions
+# Somente tablist por enquanto
+
+tablist:
+  header: '&cCOMMUNITY'
+  footer: '&8redecommunity.com'
