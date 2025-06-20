@@ -32,7 +32,8 @@ tasks.withType(JavaCompile).configureEach {
 tasks.register('copyPlugin', Copy) {
     dependsOn tasks.named('jar')
     from tasks.named('jar')
-    into new File('E\\hyze\\bungee\\plugins')
+    // Usa caminho absoluto no Windows
+    into new File('E:/hyze/bungee/plugins')
 }
 
 tasks.named('build') {
