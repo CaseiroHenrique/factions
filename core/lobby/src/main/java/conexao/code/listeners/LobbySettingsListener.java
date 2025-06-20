@@ -2,6 +2,7 @@ package conexao.code.listeners;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,26 +19,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class LobbySettingsListener implements Listener {
     private static final ItemStack COMPASS;
-    private static final ItemStack SWORD;
     static {
         COMPASS = new ItemStack(Material.COMPASS);
         ItemMeta cMeta = COMPASS.getItemMeta();
         if (cMeta != null) {
             cMeta.setUnbreakable(true);
+            cMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&aServidores"));
             COMPASS.setItemMeta(cMeta);
-        }
-        SWORD = new ItemStack(Material.WOODEN_SWORD);
-        ItemMeta sMeta = SWORD.getItemMeta();
-        if (sMeta != null) {
-            sMeta.setUnbreakable(true);
-            SWORD.setItemMeta(sMeta);
         }
     }
 
     private void giveItems(Player p) {
         p.getInventory().clear();
-        p.getInventory().setItem(0, COMPASS.clone());
-        p.getInventory().setItem(1, SWORD.clone());
+        p.getInventory().setItem(4, COMPASS.clone());
     }
 
     private void applyPlayerSettings(Player p) {
@@ -89,7 +83,7 @@ public class LobbySettingsListener implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent e) {
         Material type = e.getItemDrop().getItemStack().getType();
-        if (type == Material.COMPASS || type.toString().endsWith("_SWORD")) {
+        if (type == Material.COMPASS) {
             e.setCancelled(true);
         }
     }
