@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'conexao.code'
@@ -36,17 +37,28 @@ processResources {
 
 // Copia o plugin gerado para as pastas dos servidores lobby e factions
 tasks.register('copyToFactions', Copy) {
-    dependsOn tasks.named('jar')
-    from tasks.named('jar')
+    dependsOn tasks.named('shadowJar')
+    from tasks.named('shadowJar')
     into new File('E:/hyze/factions/plugins')
 }
 
 tasks.register('copyToLobby', Copy) {
-    dependsOn tasks.named('jar')
-    from tasks.named('jar')
+    dependsOn tasks.named('shadowJar')
+    from tasks.named('shadowJar')
     into new File('E:/hyze/lobby/plugins')
 }
 
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    archiveBaseName.set('permissions')
+    archiveClassifier.set('')
+    mergeServiceFiles()
+}
+
+tasks.named('jar') {
+    enabled = false
+}
+
 tasks.named('build') {
+    dependsOn tasks.named('shadowJar')
     finalizedBy tasks.named('copyToFactions'), tasks.named('copyToLobby')
 }
