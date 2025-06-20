@@ -68,5 +68,6 @@ tasks.named('build') {
 tasks.register('copyPlugin', Copy) {
     dependsOn tasks.named('shadowJar')
     from tasks.named('shadowJar')
-    into new File('E\\hyze\\login\\plugins')
+    // Copia o plugin para a pasta do servidor de login em E:\\
+    into new File('E:/hyze/login/plugins')
 }
