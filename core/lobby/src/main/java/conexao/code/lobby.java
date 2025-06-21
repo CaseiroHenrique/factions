@@ -11,10 +11,13 @@ import conexao.code.manager.SpawnManager;
 import conexao.code.listeners.LobbySettingsListener;
 import conexao.code.menu.ServerSelectorMenu;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class lobby extends JavaPlugin implements Listener {
@@ -66,6 +69,24 @@ public class lobby extends JavaPlugin implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent e) {
         if (spawnManager.getSpawn() != null) {
             e.setRespawnLocation(spawnManager.getSpawn());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCommandPreprocess(PlayerCommandPreprocessEvent e) {
+        String message = e.getMessage();
+        String lower = message.toLowerCase();
+        if (lower.startsWith("/trocarsenha")) {
+            e.setCancelled(true);
+
+            String[] split = message.substring(1).split(" ");
+            String label = split[0];
+            String[] args = java.util.Arrays.copyOfRange(split, 1, split.length);
+
+            PluginCommand cmd = getCommand(label);
+            if (cmd != null && cmd.getExecutor() != null) {
+                cmd.getExecutor().onCommand(e.getPlayer(), cmd, label, args);
+            }
         }
     }
 }
