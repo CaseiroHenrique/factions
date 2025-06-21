@@ -1,10 +1,16 @@
 package conexao.code.common.factions;
 
 public enum FactionRank {
+    /** Rei da facção (apenas um) */
     REI("\u265B"),
-    CAVALEIRO("\u265E"),
-    SOLDADO("\u2694"),
-    ESCUDEIRO("\u26E8");
+    /** Conselheiros do rei (até dois) */
+    CONSELHEIRO("\u265D"),
+    /** Chefe de guerra (apenas um) */
+    CHEFE_GUERRA("\u2694"),
+    /** Membros do exército, sem limite */
+    EXERCITO("\u2692"),
+    /** Plebeus da facção, sem limite */
+    PLEBEU("\u26E8");
 
     private final String icon;
     FactionRank(String icon) {
