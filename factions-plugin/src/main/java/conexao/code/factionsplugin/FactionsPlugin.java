@@ -4,6 +4,8 @@ import conexao.code.common.DatabaseManager;
 import conexao.code.common.factions.FactionDAO;
 import conexao.code.common.factions.FactionMemberDAO;
 import conexao.code.factionsplugin.listener.FriendlyFireListener;
+import conexao.code.factionsplugin.listener.FactionPlayerListener;
+import conexao.code.factionsplugin.FactionChatCommand;
 
 import java.util.Map;
 import java.util.UUID;
@@ -34,7 +36,9 @@ public class FactionsPlugin extends JavaPlugin {
             getLogger().severe("Erro ao criar tabela de facções: " + ex.getMessage());
         }
         getCommand("f").setExecutor(new FactionCommand(this));
+        getCommand("c").setExecutor(new FactionChatCommand(this));
         getServer().getPluginManager().registerEvents(new FriendlyFireListener(), this);
+        getServer().getPluginManager().registerEvents(new FactionPlayerListener(this), this);
     }
 
     public static class Invite {

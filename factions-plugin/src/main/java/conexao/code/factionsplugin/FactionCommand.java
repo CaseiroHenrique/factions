@@ -165,6 +165,7 @@ public class FactionCommand implements CommandExecutor {
         new BukkitRunnable() {
             @Override
             public void run() {
+                java.util.List<UUID> members;
                 try {
                     if (FactionMemberDAO.getFactionId(player.getUniqueId()).isPresent()) {
                         player.sendMessage(ChatColor.RED + "Você já está em uma facção.");
@@ -175,12 +176,18 @@ public class FactionCommand implements CommandExecutor {
                         return;
                     }
                     FactionMemberDAO.addMember(invite.factionId, player.getUniqueId(), FactionRank.PLEBEU);
+                    members = FactionMemberDAO.getMembers(invite.factionId);
                 } catch (Exception e) {
                     player.sendMessage(ChatColor.RED + "Erro ao entrar na facção.");
                     return;
                 }
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     player.sendMessage(ChatColor.GREEN + "Você entrou na facção!");
+                    String msg = ChatColor.GREEN + player.getName() + " Entrou na facção.";
+                    for (UUID id : members) {
+                        Player p = Bukkit.getPlayer(id);
+                        if (p != null) p.sendMessage(msg);
+                    }
                 });
             }
         }.runTaskAsynchronously(plugin);
@@ -190,6 +197,7 @@ public class FactionCommand implements CommandExecutor {
         new BukkitRunnable() {
             @Override
             public void run() {
+                java.util.List<UUID> members;
                 try {
                     Optional<FactionRank> rankOpt = FactionMemberDAO.getRank(player.getUniqueId());
                     if (rankOpt.isEmpty()) {
@@ -200,12 +208,26 @@ public class FactionCommand implements CommandExecutor {
                         player.sendMessage(ChatColor.RED + "Transfira ou desfaca a facção antes.");
                         return;
                     }
+                    Optional<Integer> facOpt = FactionMemberDAO.getFactionId(player.getUniqueId());
+                    if (facOpt.isEmpty()) {
+                        player.sendMessage(ChatColor.RED + "Você não está em facção.");
+                        return;
+                    }
+                    int facId = facOpt.get();
                     FactionMemberDAO.removeMember(player.getUniqueId());
+                    members = FactionMemberDAO.getMembers(facId);
                 } catch (Exception e) {
                     player.sendMessage(ChatColor.RED + "Erro ao sair da facção.");
                     return;
                 }
-                Bukkit.getScheduler().runTask(plugin, () -> player.sendMessage(ChatColor.GREEN + "Você saiu da facção."));
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    player.sendMessage(ChatColor.GREEN + "Você saiu da facção.");
+                    String msg = ChatColor.GREEN + player.getName() + " Saiu da facção.";
+                    for (UUID id : members) {
+                        Player p = Bukkit.getPlayer(id);
+                        if (p != null) p.sendMessage(msg);
+                    }
+                });
             }
         }.runTaskAsynchronously(plugin);
     }
@@ -293,6 +315,7 @@ public class FactionCommand implements CommandExecutor {
         new BukkitRunnable() {
             @Override
             public void run() {
+                java.util.List<UUID> members;
                 try {
                     Optional<Integer> facOpt = FactionMemberDAO.getFactionId(player.getUniqueId());
                     Optional<Integer> facTarget = FactionMemberDAO.getFactionId(target.getUniqueId());
@@ -305,8 +328,10 @@ public class FactionCommand implements CommandExecutor {
                         player.sendMessage(ChatColor.RED + "Apenas o Rei pode transferir.");
                         return;
                     }
+                    int facId = facOpt.get();
                     FactionMemberDAO.updateRank(player.getUniqueId(), FactionRank.CONSELHEIRO);
                     FactionMemberDAO.updateRank(target.getUniqueId(), FactionRank.REI);
+                    members = FactionMemberDAO.getMembers(facId);
                 } catch (Exception e) {
                     player.sendMessage(ChatColor.RED + "Erro ao transferir liderança.");
                     return;
@@ -314,6 +339,11 @@ public class FactionCommand implements CommandExecutor {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     player.sendMessage(ChatColor.GREEN + "Você transferiu a coroa.");
                     target.sendMessage(ChatColor.GREEN + "Você agora é o Rei da facção!");
+                    String msg = ChatColor.GREEN + target.getName() + " Foi coroado e agora temos um novo rei na facção.";
+                    for (UUID id : members) {
+                        Player p = Bukkit.getPlayer(id);
+                        if (p != null) p.sendMessage(msg);
+                    }
                 });
             }
         }.runTaskAsynchronously(plugin);

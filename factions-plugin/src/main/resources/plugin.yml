@@ -5,3 +5,5 @@ api-version: '1.21'
 commands:
   f:
     description: Comandos de facção
+  c:
+    description: Chat da facção
