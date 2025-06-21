@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
+import conexao.code.manager.ScoreboardManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
@@ -29,18 +30,30 @@ import java.util.Map;
 
 public class ServerSelectorMenu implements Listener {
     private final Plugin plugin;
+    private final ScoreboardManager scoreboardManager;
     private final Inventory menu;
     private final Map<Integer, String> serverBySlot = new HashMap<>();
 
-    public ServerSelectorMenu(Plugin plugin) {
+    private static class Entry {
+        int slot;
+        ItemStack baseItem;
+        String name;
+        List<String> lore;
+        String server;
+    }
+
+    private final List<Entry> entries = new ArrayList<>();
+
+    public ServerSelectorMenu(Plugin plugin, ScoreboardManager scoreboardManager) {
         this.plugin = plugin;
+        this.scoreboardManager = scoreboardManager;
         this.menu = Bukkit.createInventory(null, 27, ChatColor.translateAlternateColorCodes('&', "&aServidores"));
         loadConfig();
     }
 
     private void loadConfig() {
         serverBySlot.clear();
-        menu.clear();
+        entries.clear();
         FileConfiguration cfg = plugin.getConfig();
         List<Map<?, ?>> servers = cfg.getMapList("servers");
         for (Map<?, ?> map : servers) {
@@ -75,19 +88,13 @@ public class ServerSelectorMenu implements Listener {
             @SuppressWarnings("unchecked")
             List<String> lore = loreObj instanceof List ? (List<String>) loreObj : List.of();
 
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
-                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-                List<String> cLore = new ArrayList<>();
-                for (String line : lore) {
-                    cLore.add(ChatColor.translateAlternateColorCodes('&', line));
-                }
-                meta.setLore(cLore);
-                item.setItemMeta(meta);
-            }
-
-            menu.setItem(slot, item);
-            serverBySlot.put(slot, String.valueOf(serverObj));
+            Entry entry = new Entry();
+            entry.slot = slot;
+            entry.baseItem = item;
+            entry.name = name;
+            entry.lore = lore;
+            entry.server = String.valueOf(serverObj);
+            entries.add(entry);
         }
     }
 
@@ -122,6 +129,25 @@ public class ServerSelectorMenu implements Listener {
     }
 
     public void open(Player player) {
+        menu.clear();
+        serverBySlot.clear();
+        for (Entry entry : entries) {
+            ItemStack item = entry.baseItem.clone();
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', entry.name));
+                List<String> loreLines = new ArrayList<>();
+                for (String line : entry.lore) {
+                    String replaced = scoreboardManager.applyPlaceholders(line);
+                    loreLines.add(ChatColor.translateAlternateColorCodes('&', replaced));
+                }
+                meta.setLore(loreLines);
+                item.setItemMeta(meta);
+            }
+            menu.setItem(entry.slot, item);
+            serverBySlot.put(entry.slot, entry.server);
+            scoreboardManager.requestPlayerCount(entry.server);
+        }
         player.openInventory(menu);
     }
 
