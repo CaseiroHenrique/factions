@@ -1,0 +1,4 @@
+name: LegacyCombat
+main: conexao.code.legacycombat.LegacyCombatPlugin
+version: ${version}
+api-version: '1.21'
