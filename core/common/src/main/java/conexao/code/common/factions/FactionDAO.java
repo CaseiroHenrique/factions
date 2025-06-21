@@ -20,11 +20,16 @@ public class FactionDAO {
         }
     }
 
+    /**
+     * Verifica se existe uma facção com a tag informada.
+     * O valor da tag é normalizado para letras maiúsculas para
+     * evitar problemas de diferença de caixa.
+     */
     public static boolean existsByTag(String tag) throws SQLException {
         String sql = "SELECT 1 FROM factions WHERE tag = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, tag);
+            ps.setString(1, tag.toUpperCase());
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
@@ -46,7 +51,8 @@ public class FactionDAO {
         String sql = "INSERT INTO factions(tag, name) VALUES(?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, tag);
+            // Sempre armazena a tag em maiúsculas
+            ps.setString(1, tag.toUpperCase());
             ps.setString(2, name);
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -62,7 +68,7 @@ public class FactionDAO {
         String sql = "SELECT id FROM factions WHERE tag = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, tag);
+            ps.setString(1, tag.toUpperCase());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return Optional.of(rs.getInt("id"));
