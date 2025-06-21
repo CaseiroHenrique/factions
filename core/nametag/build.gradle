@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+
+group = 'conexao.code'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    implementation project(':common')
+    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(21)
+}
+
+processResources {
+    inputs.property 'version', version
+    filteringCharset = 'UTF-8'
+    filesMatching('plugin.yml') { expand version: version }
+}
+
+tasks.register('copyToFactions', Copy) {
+    dependsOn tasks.named('jar')
+    from tasks.named('jar')
+    into new File('E:/hyze/factions/plugins')
+}
+
+tasks.named('build') {
+    finalizedBy tasks.named('copyToFactions')
+}
