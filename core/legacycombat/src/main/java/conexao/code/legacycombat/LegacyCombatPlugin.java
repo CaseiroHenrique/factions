@@ -1,6 +1,8 @@
 package conexao.code.legacycombat;
 
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,6 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -26,10 +29,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LegacyCombatPlugin extends JavaPlugin implements Listener {
     // players currently blocking with a sword
     private final Set<UUID> blocking = new HashSet<>();
+    // configured damage values for weapons
+    private final Map<Material, Double> weaponDamage = new EnumMap<>(Material.class);
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
+        saveDefaultConfig();
+        loadDamageValues();
         // set attack speed for online players
         for (Player player : getServer().getOnlinePlayers()) {
             applyAttackSpeed(player);
@@ -87,12 +94,10 @@ public class LegacyCombatPlugin extends JavaPlugin implements Listener {
             event.setCancelled(true);
             return;
         }
-        // old axe damage values
-        if (type.name().endsWith("_AXE")) {
-            double damage = getLegacyAxeDamage(type);
-            if (damage > 0) {
-                event.setDamage(damage);
-            }
+        // apply configured damage for swords and axes
+        Double damage = weaponDamage.get(type);
+        if (damage != null) {
+            event.setDamage(damage);
         }
         // sword blocking
         if (event.getEntity() instanceof Player) {
@@ -103,21 +108,25 @@ public class LegacyCombatPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    private double getLegacyAxeDamage(Material type) {
-        switch (type) {
-            case WOODEN_AXE:
-            case GOLDEN_AXE:
-                return 6.0; // 3 hearts
-            case STONE_AXE:
-                return 8.0; // 4 hearts
-            case IRON_AXE:
-                return 10.0; // 5 hearts
-            case DIAMOND_AXE:
-                return 12.0; // 6 hearts
-            case NETHERITE_AXE:
-                return 14.0; // 7 hearts
-            default:
-                return -1.0;
+    private void loadDamageValues() {
+        weaponDamage.clear();
+        ConfigurationSection axes = getConfig().getConfigurationSection("axe-damage");
+        if (axes != null) {
+            for (String key : axes.getKeys(false)) {
+                Material mat = Material.matchMaterial(key);
+                if (mat != null) {
+                    weaponDamage.put(mat, axes.getDouble(key));
+                }
+            }
+        }
+        ConfigurationSection swords = getConfig().getConfigurationSection("sword-damage");
+        if (swords != null) {
+            for (String key : swords.getKeys(false)) {
+                Material mat = Material.matchMaterial(key);
+                if (mat != null) {
+                    weaponDamage.put(mat, swords.getDouble(key));
+                }
+            }
         }
     }
 }
