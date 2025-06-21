@@ -23,7 +23,7 @@ public class FactionMemberDAO {
     }
 
     public static void addMember(int factionId, UUID uuid, FactionRank rank) throws SQLException {
-        String sql = "INSERT INTO faction_members(faction_id, player_uuid, rank) VALUES(?,?,?)";
+        String sql = "INSERT INTO faction_members(faction_id, player_uuid, `rank`) VALUES(?,?,?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, factionId);
@@ -56,7 +56,7 @@ public class FactionMemberDAO {
     }
 
     public static Optional<FactionRank> getRank(UUID uuid) throws SQLException {
-        String sql = "SELECT rank FROM faction_members WHERE player_uuid = ?";
+        String sql = "SELECT `rank` FROM faction_members WHERE player_uuid = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, uuid.toString());
@@ -70,7 +70,7 @@ public class FactionMemberDAO {
     }
 
     public static Optional<UUID> getLeader(int factionId) throws SQLException {
-        String sql = "SELECT player_uuid FROM faction_members WHERE faction_id = ? AND rank = 'REI'";
+        String sql = "SELECT player_uuid FROM faction_members WHERE faction_id = ? AND `rank` = 'REI'";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, factionId);
@@ -84,7 +84,7 @@ public class FactionMemberDAO {
     }
 
     public static void updateRank(UUID uuid, FactionRank rank) throws SQLException {
-        String sql = "UPDATE faction_members SET rank = ? WHERE player_uuid = ?";
+        String sql = "UPDATE faction_members SET `rank` = ? WHERE player_uuid = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, rank.name());
