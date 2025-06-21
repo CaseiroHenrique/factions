@@ -7,8 +7,10 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -136,11 +138,32 @@ public class AuthListener implements Listener {
         // se quiser encaminhar ao proxy, pode descomentar e ajustar aqui
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandPreprocess(PlayerCommandPreprocessEvent e) {
+        String message = e.getMessage();
+        String lower = message.toLowerCase(Locale.ROOT);
+
+        // Identifica comandos sensíveis de autenticação
+        if (lower.startsWith("/login") || lower.startsWith("/register")
+                || lower.startsWith("/entrar") || lower.startsWith("/logar")) {
+            // Cancela para impedir que o comando seja registrado no console
+            e.setCancelled(true);
+
+            // Executa o comando manualmente sem gerar log
+            String[] split = message.substring(1).split(" ");
+            String label = split[0];
+            String[] args = Arrays.copyOfRange(split, 1, split.length);
+            PluginCommand cmd = plugin.getCommand(label);
+            if (cmd != null && cmd.getExecutor() != null) {
+                cmd.getExecutor().onCommand(e.getPlayer(), cmd, label, args);
+            }
+            return;
+        }
+
+        // Impede outros comandos caso o jogador não esteja autenticado
         if (!authenticated.contains(e.getPlayer().getUniqueId())) {
-            String msg = e.getMessage().toLowerCase(Locale.ROOT);
-            if (!msg.startsWith("/register") && !msg.startsWith("/login")) {
+            if (!lower.startsWith("/register") && !lower.startsWith("/login")
+                    && !lower.startsWith("/entrar") && !lower.startsWith("/logar")) {
                 e.setCancelled(true);
                 e.getPlayer().sendMessage(ChatColor.RED + "Autentique-se: /register ou /login");
             }
