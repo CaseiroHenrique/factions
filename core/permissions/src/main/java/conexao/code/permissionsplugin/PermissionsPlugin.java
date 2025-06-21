@@ -11,6 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
+import java.util.List;
 import conexao.code.common.DatabaseManager;
 import conexao.code.common.factions.FactionMemberDAO;
 import conexao.code.common.factions.FactionRank;
@@ -22,18 +23,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import conexao.code.permissions.Tag;
-import org.bukkit.ChatColor;
+
+import conexao.code.permissionsplugin.TagManager;
 
 public class PermissionsPlugin extends JavaPlugin implements Listener {
     private final Map<UUID, PermissionAttachment> attachments = new HashMap<>();
     private final Map<UUID, Tag> tags = new HashMap<>();
     private String defaultTagName;
+    private String serverName;
+    private List<String> factionTagServers;
+    private TagManager tagManager;
 
     @Override
     public void onEnable() {
         // Inicializa configuracao e banco de dados
         saveDefaultConfig();
         defaultTagName = getConfig().getString("default-tag");
+        serverName = getConfig().getString("server-name", "");
+        factionTagServers = getConfig().getStringList("faction-tag-servers");
+        tagManager = new TagManager();
         String host     = getConfig().getString("mysql.host");
         int    port     = getConfig().getInt("mysql.port");
         String database = getConfig().getString("mysql.database");
@@ -104,14 +112,8 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
                         att.setPermission(perm, true);
                     }
                     tags.put(p.getUniqueId(), finalTag);
-                    String coloredPrefix = ChatColor.translateAlternateColorCodes('&', finalTag.getColor() + finalTag.getPrefix());
-                    String coloredName = ChatColor.translateAlternateColorCodes('&', finalTag.getColor() + p.getName());
-                    String base = coloredPrefix + " " + coloredName;
-                    String full = finalFaction != null ? ChatColor.GRAY + "[" + finalIcon + finalFaction + "] " + base : base;
-                    p.setDisplayName(full);
-                    p.setPlayerListName(full);
-                    p.setCustomName(full);
-                    p.setCustomNameVisible(true);
+                    boolean showFaction = finalFaction != null && factionTagServers.contains(serverName);
+                    tagManager.apply(p, finalTag, finalFaction, finalIcon, showFaction);
                 });
             }
         }.runTaskAsynchronously(this);

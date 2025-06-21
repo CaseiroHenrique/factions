@@ -4,5 +4,10 @@ mysql:
   database: minecraft
   user: root
   password: minecraft
+# Identificação deste servidor
+server-name: factions
+# Servidores onde a tag da facção deve aparecer
+faction-tag-servers:
+  - factions
 # Tag atribuída automaticamente a novos jogadores
 default-tag: exemplo
