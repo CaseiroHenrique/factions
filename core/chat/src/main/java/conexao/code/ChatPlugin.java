@@ -83,7 +83,8 @@ public class ChatPlugin extends JavaPlugin implements Listener {
             }
         } catch (Exception ignored) {}
         if (factionTag != null) {
-            formatted = ChatColor.GRAY + "[L] " + ChatColor.GRAY + "[" + icon + factionTag + "] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
+            String name = stripFactionSuffix(sender.getDisplayName(), icon, factionTag);
+            formatted = ChatColor.GRAY + "[L] " + ChatColor.GRAY + "[" + icon + factionTag + "] " + name + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
         } else {
             formatted = ChatColor.GRAY + "[L] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.GRAY + message;
         }
@@ -113,7 +114,8 @@ public class ChatPlugin extends JavaPlugin implements Listener {
         } catch (Exception ignored) {}
         String formatted;
         if (factionTag != null) {
-            formatted = ChatColor.GRAY + "[G] " + ChatColor.GRAY + "[" + icon + factionTag + "] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.RESET + message;
+            String name = stripFactionSuffix(sender.getDisplayName(), icon, factionTag);
+            formatted = ChatColor.GRAY + "[G] " + ChatColor.GRAY + "[" + icon + factionTag + "] " + name + ChatColor.GRAY + ": " + ChatColor.RESET + message;
         } else {
             formatted = ChatColor.GRAY + "[G] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.RESET + message;
         }
@@ -171,5 +173,13 @@ public class ChatPlugin extends JavaPlugin implements Listener {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private String stripFactionSuffix(String displayName, String icon, String tag) {
+        String suffix = ChatColor.GRAY + "[" + icon + tag + "]";
+        if (displayName.endsWith(" " + suffix)) {
+            return displayName.substring(0, displayName.length() - suffix.length() - 1);
+        }
+        return displayName;
     }
 }
