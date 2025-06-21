@@ -60,7 +60,7 @@ public class FactionCommand implements CommandExecutor {
             player.sendMessage(ChatColor.YELLOW + "Uso: /f criar <tag> <nome>");
             return;
         }
-        String tag = args[1];
+        String tag = args[1].toUpperCase();
         String name = args[2];
         if (tag.length() > 3) {
             player.sendMessage(ChatColor.RED + "Tag deve ter no máximo 3 caracteres.");
