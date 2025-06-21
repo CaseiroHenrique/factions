@@ -3,8 +3,7 @@ package conexao.code.common.factions;
 import conexao.code.common.DatabaseManager;
 
 import java.sql.*;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class FactionMemberDAO {
     public static void ensureTable() throws SQLException {
@@ -99,6 +98,35 @@ public class FactionMemberDAO {
             ps.setInt(1, factionId);
             ps.executeUpdate();
         }
+    }
+
+    public static int countMembers(int factionId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM faction_members WHERE faction_id = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, factionId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
+
+    public static java.util.List<UUID> getMembers(int factionId) throws SQLException {
+        String sql = "SELECT player_uuid FROM faction_members WHERE faction_id = ?";
+        java.util.List<UUID> list = new java.util.ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, factionId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(UUID.fromString(rs.getString("player_uuid")));
+                }
+            }
+        }
+        return list;
     }
 
     public static Optional<String> getFactionTag(UUID uuid) throws SQLException {
