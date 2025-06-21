@@ -2,4 +2,4 @@ name: nametag
 main: conexao.code.nametag.NametagPlugin
 version: ${version}
 api-version: 1.21
-depend: [permissions, factions-plugin]
+depend: [permissions, LakeFactions]
