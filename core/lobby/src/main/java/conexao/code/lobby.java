@@ -4,6 +4,7 @@ package conexao.code;
 import conexao.code.commands.ReloadCommand;
 import conexao.code.commands.SetSpawnCommand;
 import conexao.code.commands.ChangePasswordCommand;
+import conexao.code.commands.SetHologramCommand;
 import conexao.code.common.DatabaseManager;
 import conexao.code.manager.ScoreboardManager;
 import conexao.code.manager.TabListManager;
@@ -47,9 +48,22 @@ public class lobby extends JavaPlugin implements Listener {
             String serverName = getConfig().getString("hologram.server", "factions");
             String itemName = getConfig().getString("hologram.item", "DIAMOND_SWORD");
             double offset = getConfig().getDouble("hologram.offset-y", 2.0);
+            boolean smallItem = getConfig().getBoolean("hologram.small-item", false);
+            String nameColor = getConfig().getString("hologram.name-color", "&e");
+            String countColor = getConfig().getString("hologram.count-color", "&e");
             org.bukkit.Material mat = org.bukkit.Material.matchMaterial(itemName);
             org.bukkit.inventory.ItemStack stack = mat != null ? new org.bukkit.inventory.ItemStack(mat) : new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND_SWORD);
-            hologramManager = new HologramManager(this, scoreboardManager, stack, serverName, offset);
+            org.bukkit.Location holoLoc = null;
+            if (getConfig().contains("hologram.world")) {
+                org.bukkit.World w = org.bukkit.Bukkit.getWorld(getConfig().getString("hologram.world"));
+                if (w != null) {
+                    double hx = getConfig().getDouble("hologram.x");
+                    double hy = getConfig().getDouble("hologram.y");
+                    double hz = getConfig().getDouble("hologram.z");
+                    holoLoc = new org.bukkit.Location(w, hx, hy, hz);
+                }
+            }
+            hologramManager = new HologramManager(this, scoreboardManager, stack, serverName, offset, smallItem, nameColor, countColor, holoLoc);
         }
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", scoreboardManager);
@@ -59,13 +73,14 @@ public class lobby extends JavaPlugin implements Listener {
         getCommand("recarregar").setExecutor(new ReloadCommand(this, scoreboardManager, tabListManager));
         getCommand("setspawn").setExecutor(new SetSpawnCommand(spawnManager));
         getCommand("trocarsenha").setExecutor(new ChangePasswordCommand(this));
+        getCommand("sethologram").setExecutor(new SetHologramCommand(this, hologramManager));
     }
 
     @Override
     public void onDisable() {
         scoreboardManager.stop();
         if (hologramManager != null) {
-            hologramManager.removeAll();
+            hologramManager.remove();
         }
     }
 

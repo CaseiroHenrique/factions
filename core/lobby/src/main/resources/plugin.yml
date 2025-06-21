@@ -14,10 +14,16 @@ commands:
   trocarsenha:
     description: Altera sua senha
     usage: /trocarsenha <senha-antiga> <senha-nova>
+  sethologram:
+    description: Define a localização do holograma do lobby
+    usage: /sethologram
 permissions:
   lobby.reload:
     description: Permite usar /recarregar
     default: op
   lobby.setspawn:
     description: Permite definir o spawn do lobby
+    default: op
+  lobby.sethologram:
+    description: Permite definir a posição do holograma
     default: op
