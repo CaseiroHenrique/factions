@@ -41,6 +41,7 @@ public class FactionCommand implements CommandExecutor {
         switch (sub) {
             case "criar" -> handleCreate(player, args);
             case "convidar" -> handleInvite(player, args);
+            case "membros" -> handleMembers(player);
             case "aceitar", "entrar" -> handleAccept(player);
             case "sair" -> handleLeave(player);
             case "desfazer" -> handleDisband(player);
@@ -123,6 +124,10 @@ public class FactionCommand implements CommandExecutor {
                 player.sendMessage(ChatColor.RED + "Apenas o Rei pode convidar.");
                 return;
             }
+            if (FactionMemberDAO.countMembers(factionId) >= 15) {
+                player.sendMessage(ChatColor.RED + "Facção está cheia.");
+                return;
+            }
             Map<UUID, FactionsPlugin.Invite> invites = plugin.getInvites();
             FactionsPlugin.Invite existing = invites.get(target.getUniqueId());
             long now = System.currentTimeMillis();
@@ -163,6 +168,10 @@ public class FactionCommand implements CommandExecutor {
                 try {
                     if (FactionMemberDAO.getFactionId(player.getUniqueId()).isPresent()) {
                         player.sendMessage(ChatColor.RED + "Você já está em uma facção.");
+                        return;
+                    }
+                    if (FactionMemberDAO.countMembers(invite.factionId) >= 15) {
+                        player.sendMessage(ChatColor.RED + "Facção está cheia.");
                         return;
                     }
                     FactionMemberDAO.addMember(invite.factionId, player.getUniqueId(), FactionRank.ESCUDEIRO);
@@ -226,6 +235,49 @@ public class FactionCommand implements CommandExecutor {
                 Bukkit.getScheduler().runTask(plugin, () -> player.sendMessage(ChatColor.GREEN + "Facção desfeita."));
             }
         }.runTaskAsynchronously(plugin);
+    }
+
+    private void handleMembers(Player player) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    Optional<Integer> facOpt = FactionMemberDAO.getFactionId(player.getUniqueId());
+                    if (facOpt.isEmpty()) {
+                        player.sendMessage(ChatColor.RED + "Você não está em facção.");
+                        return;
+                    }
+                    int id = facOpt.get();
+                    java.util.List<UUID> members = FactionMemberDAO.getMembers(id);
+                    Bukkit.getScheduler().runTask(plugin, () -> openMembersMenu(player, members));
+                } catch (Exception e) {
+                    Bukkit.getScheduler().runTask(plugin, () -> player.sendMessage(ChatColor.RED + "Erro ao abrir membros."));
+                }
+            }
+        }.runTaskAsynchronously(plugin);
+    }
+
+    private void openMembersMenu(Player player, java.util.List<UUID> members) {
+        org.bukkit.inventory.Inventory inv = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Membros da Facção");
+        int index = 0;
+        for (UUID uuid : members) {
+            if (index >= 15) break;
+            org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);
+            org.bukkit.inventory.ItemStack head = new org.bukkit.inventory.ItemStack(org.bukkit.Material.PLAYER_HEAD);
+            org.bukkit.inventory.meta.SkullMeta meta = (org.bukkit.inventory.meta.SkullMeta) head.getItemMeta();
+            meta.setOwningPlayer(op);
+            meta.setDisplayName(ChatColor.YELLOW + (op.getName() == null ? uuid.toString() : op.getName()));
+            head.setItemMeta(meta);
+            inv.setItem(index++, head);
+        }
+        while (index < 15) {
+            org.bukkit.inventory.ItemStack skull = new org.bukkit.inventory.ItemStack(org.bukkit.Material.SKELETON_SKULL);
+            org.bukkit.inventory.meta.ItemMeta meta = skull.getItemMeta();
+            meta.setDisplayName(ChatColor.GRAY + "Vaga Livre");
+            skull.setItemMeta(meta);
+            inv.setItem(index++, skull);
+        }
+        player.openInventory(inv);
     }
 
     private void handleTransfer(Player player, String[] args) {
