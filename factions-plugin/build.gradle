@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation files('../core/common/build/libs/common-1.0-SNAPSHOT.jar')
+    implementation 'conexao.code:common:1.0-SNAPSHOT'
     compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
 }
 
