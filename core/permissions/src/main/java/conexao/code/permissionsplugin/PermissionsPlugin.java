@@ -12,6 +12,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import conexao.code.common.DatabaseManager;
+import conexao.code.common.factions.FactionMemberDAO;
+import conexao.code.common.factions.FactionRank;
 
 import java.io.File;
 import java.util.HashSet;
@@ -68,6 +70,8 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
             @Override
             public void run() {
                 conexao.code.permissions.Tag tag;
+                String factionTag = null;
+                String icon = "";
                 try {
                     tag = conexao.code.permissions.TagDAO.getTagByUser(p.getUniqueId());
                     if (tag == null && defaultTagName != null) {
@@ -77,12 +81,20 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
                             tag = def;
                         }
                     }
+                    java.util.Optional<String> facOpt = FactionMemberDAO.getFactionTag(p.getUniqueId());
+                    if (facOpt.isPresent()) {
+                        factionTag = facOpt.get();
+                        java.util.Optional<FactionRank> rankOpt = FactionMemberDAO.getRank(p.getUniqueId());
+                        icon = rankOpt.map(FactionRank::getIcon).orElse("");
+                    }
                 } catch (Exception ex) {
                     getLogger().warning("Erro ao carregar tag: " + ex.getMessage());
                     return;
                 }
                 if (tag == null) return;
                 final Tag finalTag = tag;
+                final String finalFaction = factionTag;
+                final String finalIcon = icon;
                 org.bukkit.Bukkit.getScheduler().runTask(PermissionsPlugin.this, () -> {
                     PermissionAttachment att = attachments.remove(p.getUniqueId());
                     if (att != null) p.removeAttachment(att);
@@ -94,7 +106,8 @@ public class PermissionsPlugin extends JavaPlugin implements Listener {
                     tags.put(p.getUniqueId(), finalTag);
                     String coloredPrefix = ChatColor.translateAlternateColorCodes('&', finalTag.getColor() + finalTag.getPrefix());
                     String coloredName = ChatColor.translateAlternateColorCodes('&', finalTag.getColor() + p.getName());
-                    String full = coloredPrefix + " " + coloredName;
+                    String base = coloredPrefix + " " + coloredName;
+                    String full = finalFaction != null ? ChatColor.GRAY + "[" + finalIcon + finalFaction + "] " + base : base;
                     p.setDisplayName(full);
                     p.setPlayerListName(full);
                     p.setCustomName(full);
