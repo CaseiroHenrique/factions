@@ -62,3 +62,11 @@ hologram:
   item: DIAMOND_SWORD
   server: factions
   offset-y: 2.0
+  small-item: false
+  name-color: '&e'
+  count-color: '&e'
+  # Defina usando /sethologram
+  world: world
+  x: 0
+  y: 80
+  z: 0
