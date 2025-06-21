@@ -25,8 +25,8 @@ scoreboard:
     - '&0 '                         # linha em branco (única por conter &0)
     - '&7Lobby: &f#3'
     - '&7 '                         # outra linha em branco
-    - '&c# Factions Fire:'
-    - '&a%online%/&c500 jogando!'
+    - '&c# Factions:'
+    - '&a    %online_factions%/500 jogando!'
     - '&7 '                         # em branco
     - '&7CP: &f%cp%'
     - '&7Cash: &6%cash%'
@@ -45,6 +45,7 @@ servers:
     name: '&cFactions'
     lore:
       - '&7Servidor focado em Factions'
+      - '&aOnline: %online_factions%'
     server: factions
   - slot: 15
     # Especifique 'head' com o nome de jogador ou textura Base64
@@ -52,4 +53,12 @@ servers:
     name: '&aSkyWars'
     lore:
       - '&7Entre em partidas rápidas de SkyWars'
+      - '&aOnline: %online_skywars%'
     server: skywars
+
+# ----- Hologram -----
+hologram:
+  enabled: true
+  item: DIAMOND_SWORD
+  server: factions
+  offset-y: 2.0

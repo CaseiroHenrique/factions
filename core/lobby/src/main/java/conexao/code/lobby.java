@@ -10,6 +10,7 @@ import conexao.code.manager.TabListManager;
 import conexao.code.manager.SpawnManager;
 import conexao.code.listeners.LobbySettingsListener;
 import conexao.code.menu.ServerSelectorMenu;
+import conexao.code.hologram.HologramManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.EventHandler;
@@ -25,6 +26,7 @@ public class lobby extends JavaPlugin implements Listener {
     private TabListManager tabListManager;
     private SpawnManager spawnManager;
     private ServerSelectorMenu selectorMenu;
+    private HologramManager hologramManager;
 
     @Override
     public void onEnable() {
@@ -40,8 +42,17 @@ public class lobby extends JavaPlugin implements Listener {
         tabListManager = new TabListManager(this);
         tabListManager.applyAll();
         spawnManager = new SpawnManager(this);
-        selectorMenu = new ServerSelectorMenu(this);
+        selectorMenu = new ServerSelectorMenu(this, scoreboardManager);
+        if (getConfig().getBoolean("hologram.enabled", false)) {
+            String serverName = getConfig().getString("hologram.server", "factions");
+            String itemName = getConfig().getString("hologram.item", "DIAMOND_SWORD");
+            double offset = getConfig().getDouble("hologram.offset-y", 2.0);
+            org.bukkit.Material mat = org.bukkit.Material.matchMaterial(itemName);
+            org.bukkit.inventory.ItemStack stack = mat != null ? new org.bukkit.inventory.ItemStack(mat) : new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND_SWORD);
+            hologramManager = new HologramManager(this, scoreboardManager, stack, serverName, offset);
+        }
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", scoreboardManager);
         Bukkit.getPluginManager().registerEvents(this, this);
         Bukkit.getPluginManager().registerEvents(new LobbySettingsListener(), this);
         Bukkit.getPluginManager().registerEvents(selectorMenu, this);
@@ -53,6 +64,9 @@ public class lobby extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         scoreboardManager.stop();
+        if (hologramManager != null) {
+            hologramManager.removeAll();
+        }
     }
 
     @EventHandler
