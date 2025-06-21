@@ -185,6 +185,7 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "Você entrou na facção!");
                     String msg = ChatColor.GREEN + player.getName() + " Entrou na facção.";
                     for (UUID id : members) {
+                        if (id.equals(player.getUniqueId())) continue;
                         Player p = Bukkit.getPlayer(id);
                         if (p != null) p.sendMessage(msg);
                     }
