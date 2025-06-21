@@ -174,7 +174,7 @@ public class FactionCommand implements CommandExecutor {
                         player.sendMessage(ChatColor.RED + "Facção está cheia.");
                         return;
                     }
-                    FactionMemberDAO.addMember(invite.factionId, player.getUniqueId(), FactionRank.ESCUDEIRO);
+                    FactionMemberDAO.addMember(invite.factionId, player.getUniqueId(), FactionRank.PLEBEU);
                 } catch (Exception e) {
                     player.sendMessage(ChatColor.RED + "Erro ao entrar na facção.");
                     return;
@@ -305,7 +305,7 @@ public class FactionCommand implements CommandExecutor {
                         player.sendMessage(ChatColor.RED + "Apenas o Rei pode transferir.");
                         return;
                     }
-                    FactionMemberDAO.updateRank(player.getUniqueId(), FactionRank.CAVALEIRO);
+                    FactionMemberDAO.updateRank(player.getUniqueId(), FactionRank.CONSELHEIRO);
                     FactionMemberDAO.updateRank(target.getUniqueId(), FactionRank.REI);
                 } catch (Exception e) {
                     player.sendMessage(ChatColor.RED + "Erro ao transferir liderança.");
