@@ -1,6 +1,7 @@
 package conexao.code;
 
 import conexao.code.listeners.SpawnListener;
+import conexao.code.listeners.HungerListener;
 import conexao.code.manager.TabListManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -18,6 +19,7 @@ public final class factions extends JavaPlugin implements Listener {
         tabListManager.applyAll();
         Bukkit.getPluginManager().registerEvents(this, this);
         Bukkit.getPluginManager().registerEvents(new SpawnListener(), this);
+        Bukkit.getPluginManager().registerEvents(new HungerListener(), this);
     }
 
     @Override
@@ -29,5 +31,6 @@ public final class factions extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         tabListManager.applyAll();
+        event.getPlayer().setFoodLevel(20);
     }
 }
