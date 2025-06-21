@@ -21,8 +21,13 @@ public class TagManager {
     }
 
     public void apply(Player player, Tag tag, String factionTag, String icon, boolean showFaction) {
+        // Nome base sem a tag da facção, utilizado no chat
+        String base = format(tag, player, null, "", false);
+        // Nome completo (com facção) mostrado na lista de jogadores e acima do personagem
         String full = format(tag, player, factionTag, icon, showFaction);
-        player.setDisplayName(full);
+
+        // Evita a repetição da tag da facção no chat usando apenas o nome base
+        player.setDisplayName(base);
         player.setPlayerListName(full);
         player.setCustomName(full);
         player.setCustomNameVisible(true);

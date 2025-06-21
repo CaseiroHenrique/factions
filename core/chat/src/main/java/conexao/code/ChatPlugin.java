@@ -113,11 +113,15 @@ public class ChatPlugin extends JavaPlugin implements Listener {
             }
         } catch (Exception ignored) {}
         String formatted;
+        String remoteName;
         if (factionTag != null) {
             String name = stripFactionSuffix(sender.getDisplayName(), icon, factionTag);
-            formatted = ChatColor.GRAY + "[G] " + ChatColor.GRAY + "[" + icon + factionTag + "] " + name + ChatColor.GRAY + ": " + ChatColor.RESET + message;
+            String prefix = ChatColor.GRAY + "[" + icon + factionTag + "] " + name;
+            formatted = ChatColor.GRAY + "[G] " + prefix + ChatColor.GRAY + ": " + ChatColor.RESET + message;
+            remoteName = prefix;
         } else {
             formatted = ChatColor.GRAY + "[G] " + sender.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.RESET + message;
+            remoteName = sender.getDisplayName();
         }
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.sendMessage(formatted);
@@ -129,7 +133,7 @@ public class ChatPlugin extends JavaPlugin implements Listener {
             // Não enviamos mais o nome do servidor de origem, apenas o jogador
             // e a mensagem, garantindo que o prefixo [G] seja o mesmo em todos
             // os servidores.
-            data.writeUTF(sender.getDisplayName());
+            data.writeUTF(remoteName);
             data.writeUTF(message);
 
             List<String> targets = globalTargets;
